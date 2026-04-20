@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>123Dentist — Careers Kiosk</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X8FG6JMV1R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-X8FG6JMV1R');
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #1B2B6B;
+    --navy-dk: #131f50;
+    --blue:    #2D7CC7;
+    --blue-lt: #E8F2FB;
+    --sky:     #5BB3E4;
+    --white:   #FFFFFF;
+    --cream:   #F4F7FB;
+    --ink:     #1B2B6B;
+    --muted:   #6B7A99;
+    --border:  #D1DCEE;
+    --radius:  16px;
+    --shadow:  0 4px 32px rgba(27,43,107,.13);
+    --btn-h:   72px;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Header */
+  header {
+    background: var(--navy);
+    padding: 0 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 88px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .logo img {
+    height: 44px;
+    width: auto;
+    display: block;
+  }
+  header .tagline {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--sky);
+  }
+
+  /* Stepbar */
+  #stepbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 56px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    font-size: 13px;
+  }
+  .crumb {
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background .15s, color .15s;
+  }
+  .crumb:hover { background: var(--blue-lt); color: var(--blue); }
+  .crumb.active { color: var(--navy); font-weight: 700; }
+  .crumb-sep { color: var(--border); }
+
+  /* Content */
+  #content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 44px 56px calc(var(--btn-h) + 24px);
+    scroll-behavior: smooth;
+  }
+
+  .screen-title {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    color: var(--navy);
+    letter-spacing: -.5px;
+  }
+  .screen-subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 36px;
+  }
+
+  /* Card grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .card-grid.centered {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+  }
+  .card-grid.centered .option-card {
+    width: 280px;
+    flex-shrink: 0;
+  }
+  .option-card {
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, transform .15s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .option-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--blue);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform .25s ease;
+  }
+  .option-card:hover, .option-card:active, .option-card.touched { border-color: var(--blue); box-shadow: var(--shadow); transform: translateY(-3px); }
+  .option-card:hover::before, .option-card:active::before, .option-card.touched::before { transform: scaleY(1); }
+
+  .card-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--blue-lt);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-icon svg { width: 24px; height: 24px; stroke: var(--blue); fill: none; }
+  .card-icon svg[viewBox="0 0 506 506"] { stroke: none; fill: var(--blue); width: 28px; height: 28px; }
+  .card-icon:has(svg[viewBox="0 0 506 506"]) { background: var(--blue-lt); }
+  .card-label { font-size: 19px; font-weight: 700; line-height: 1.2; color: var(--navy); }
+  .card-meta { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .card-arrow {
+    margin-top: auto;
+    width: 32px; height: 32px;
+    background: var(--blue-lt);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .option-card:hover .card-arrow, .option-card:active .card-arrow, .option-card.touched .card-arrow { background: var(--blue); }
+  .card-arrow svg { width: 16px; height: 16px; stroke: var(--blue); transition: stroke .2s; }
+  .option-card:hover .card-arrow svg, .option-card:active .card-arrow svg, .option-card.touched .card-arrow svg { stroke: #fff; }
+
+  /* Job list */
+  .job-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .job-row {
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, transform .15s;
+  }
+  .job-row:hover, .job-row:active, .job-row.touched { border-color: var(--blue); box-shadow: var(--shadow); transform: translateX(4px); }
+  .job-row-body { flex: 1; }
+  .job-title { font-size: 19px; font-weight: 700; margin-bottom: 3px; color: var(--navy); }
+  .job-clinic { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+  .job-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 700; letter-spacing: .7px;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+  }
+  .badge-blue { background: var(--blue-lt); color: var(--blue); }
+  .badge-navy { background: #E8EBF5; color: var(--navy); }
+  .badge-gray { background: #F3F4F6; color: var(--muted); }
+
+  .job-row-arrow {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--blue-lt);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+  .job-row:hover .job-row-arrow, .job-row:active .job-row-arrow, .job-row.touched .job-row-arrow { background: var(--blue); }
+  .job-row-arrow svg { width: 18px; height: 18px; stroke: var(--blue); transition: stroke .2s; }
+  .job-row:hover .job-row-arrow svg, .job-row:active .job-row-arrow svg, .job-row.touched .job-row-arrow svg { stroke: #fff; }
+
+  /* Detail */
+  #detail-view { max-width: 1100px; margin: 0 auto; }
+  .detail-body {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+  .detail-body-left { flex: 1; min-width: 0; }
+  .detail-body-right {
+    flex-shrink: 0;
+    width: 280px;
+    position: sticky;
+    top: 0;
+  }
+  .qr-card {
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    color: var(--white);
+    text-align: center;
+  }
+  .qr-card h3 { font-size: 18px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 7px; }
+  .qr-card p { font-size: 13px; opacity: .75; line-height: 1.65; font-weight: 400; }
+  .qr-card .qr-url { font-size: 10px; opacity: .45; word-break: break-all; font-family: monospace; }
+  .detail-header { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 28px; }
+  .detail-clinic-icon {
+    width: 64px; height: 64px;
+    background: var(--navy);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .detail-clinic-icon svg { width: 32px; height: 32px; stroke: #fff; fill: none; }
+  .detail-clinic-icon svg[viewBox="0 0 506 506"] { fill: currentColor; stroke: none; }
+  .detail-title { font-size: 32px; font-weight: 800; line-height: 1.1; margin-bottom: 4px; color: var(--navy); letter-spacing: -.5px; }
+  .detail-clinic-name { font-size: 15px; color: var(--muted); font-weight: 500; margin-bottom: 10px; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+  .detail-fact { background: var(--white); border: 2px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .detail-fact-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 4px; font-weight: 700; }
+  .detail-fact-value { font-size: 15px; font-weight: 700; color: var(--navy); }
+
+  .detail-section { margin-bottom: 24px; }
+  .detail-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--sky); font-weight: 700; margin-bottom: 10px; }
+  .detail-section p { font-size: 15px; line-height: 1.75; color: #374151; font-weight: 400; }
+
+  /* QR */
+  .qr-section {
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    display: flex; align-items: center; gap: 36px;
+    margin-top: 36px; color: var(--white);
+  }
+  #qr-canvas { background: #fff; border-radius: 10px; padding: 10px; flex-shrink: 0; }
+  #qr-canvas img, #qr-canvas canvas { display: block; }
+  .qr-text h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; letter-spacing: -.3px; }
+  .qr-text p { font-size: 14px; opacity: .75; line-height: 1.65; max-width: 320px; font-weight: 400; }
+  .qr-url { margin-top: 14px; font-size: 11px; opacity: .5; word-break: break-all; font-family: monospace; }
+
+  /* Back button */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: none; border: 2px solid var(--border);
+    padding: 10px 20px; border-radius: 10px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: border-color .2s, background .2s, color .2s;
+    margin-bottom: 32px;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--navy); letter-spacing: .3px;
+  }
+  .back-btn:hover, .back-btn:active, .back-btn.touched { border-color: var(--blue); background: var(--blue-lt); color: var(--blue); }
+  .back-btn svg { width: 15px; height: 15px; stroke: currentColor; }
+
+  /* Sticky Start Over bar */
+  #start-over-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--btn-h);
+    background: var(--white);
+    border-top: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  #start-over-btn {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 0 56px;
+    height: 48px;
+    border-radius: 50px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    transition: background .2s, transform .1s;
+  }
+  #start-over-btn:hover, #start-over-btn:active, #start-over-btn.touched { background: var(--blue); transform: scale(1.02); }
+  #start-over-btn:active { transform: scale(.98); }
+  #start-over-btn svg { width: 15px; height: 15px; stroke: #fff; }
+
+  /* Idle screen */
+  #idle-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background-image: url('bg.webp');
+    background-size: cover;
+    background-position: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; cursor: pointer;
+    transition: opacity .4s;
+  }
+  #idle-overlay::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--navy);
+    opacity: 0.8;
+    z-index: 0;
+  }
+  #idle-overlay > * { position: relative; z-index: 1; }
+  #idle-overlay > .idle-logo { position: absolute; top: 0; left: 0; right: 0; z-index: 102; }
+  #idle-overlay.hidden { opacity: 0; pointer-events: none; }
+  .idle-logo { width: 100%; padding: 32px 32px 0; display: flex; justify-content: center; }
+  .idle-logo img { height: 100px; display: block; }
+  .idle-tagline { font-size: 26px; color: var(--sky); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-top: 40px; text-align: center; }
+  .idle-kiosk-title { display: block; font-size: 100px; font-weight: 800; color: #fff; letter-spacing: -1px; line-height: 1.1; margin-bottom: 12px; text-transform: none; letter-spacing: -.5px; }
+  .idle-cta {
+    background: rgba(255,255,255,.1);
+    border: 2px solid rgba(255,255,255,.3);
+    color: #fff;
+    padding: 18px 52px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    animation: pulse 2.5s ease-in-out infinite;
+    text-transform: uppercase;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity:1; }
+    50% { transform: scale(1.03); opacity:.8; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .anim { animation: fadeUp .3s ease both; }
+  .anim-d1 { animation-delay: .05s; }
+  .anim-d2 { animation-delay: .10s; }
+  .anim-d3 { animation-delay: .15s; }
+  .anim-d4 { animation-delay: .20s; }
+  .anim-d5 { animation-delay: .25s; }
+
+  #content::-webkit-scrollbar { width: 5px; }
+  #content::-webkit-scrollbar-track { background: transparent; }
+  #content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Mobile (max 767px) ── */
+  @media (max-width: 767px) {
+    html, body { overflow: auto; }
+    #app { height: auto; min-height: 100vh; overflow: visible; }
+
+    header {
+      padding: 0 20px;
+      height: 64px;
+    }
+    .logo img { height: 32px; }
+    header .tagline { font-size: 10px; letter-spacing: 1.5px; }
+
+    #stepbar {
+      padding: 0 20px;
+      height: auto;
+      min-height: 44px;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      font-size: 12px;
+    }
+
+    #content {
+      padding: 24px 20px calc(var(--btn-h) + 20px);
+      overflow-y: visible;
+      flex: none;
+    }
+
+    .screen-title { font-size: 24px; }
+    .screen-subtitle { font-size: 13px; margin-bottom: 24px; }
+
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+    .card-grid.centered {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .card-grid.centered .option-card {
+      width: 100%;
+    }
+
+    .job-list {
+      grid-template-columns: 1fr;
+    }
+    .job-row { padding: 16px 18px; }
+    .job-title { font-size: 16px; }
+
+    .detail-body {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .detail-body-right {
+      width: 100%;
+      position: static;
+    }
+    .detail-title { font-size: 22px; }
+    .detail-header { gap: 14px; }
+    .detail-clinic-icon { width: 48px; height: 48px; border-radius: 10px; }
+    .detail-clinic-icon svg { width: 24px; height: 24px; }
+
+    .detail-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    #start-over-btn { padding: 0 32px; font-size: 12px; }
+
+    #idle-overlay { justify-content: center; }
+    .idle-logo { padding: 24px 32px 0; }
+    .idle-logo img { max-width: 280px; height: 80px; width: auto; }
+    .idle-tagline .interpunct { display: none; }
+    .idle-tagline { margin-top: 0; }
+    .idle-kiosk-title { font-size: 40px; margin-bottom: 8px; }
+    #idle-overlay .idle-cta { font-size: 13px; padding: 14px 32px; width: auto; text-align: center; max-width: 280px; line-height: 1.5; position: fixed !important; bottom: 40px; left: 0; right: 0; margin: 0 auto; z-index: 103; }
+  }
+
+  /* ── Desktop (1024px+) ── */
+  @media (min-width: 1024px) {
+    .idle-logo img { height: 130px; }
+    .idle-kiosk-title { font-size: 135px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="idle-overlay">
+  <div class="idle-logo"><img src="123Dentist_Logo.png" alt="123Dentist" /></div>
+  <div class="idle-tagline"><span class="idle-kiosk-title">Careers Kiosk</span>We'll make you smile</div>
+  <div class="idle-cta">Tap anywhere to explore opportunities</div>
+</div>
+
+<div id="app">
+  <header onclick="showIdle()" style="cursor:pointer;">
+    <div class="logo"><img src="123Dentist_Logo.png" alt="123Dentist" /></div>
+    <div class="tagline">Career Opportunities</div>
+  </header>
+
+  <div id="stepbar">
+    <span class="crumb active" id="crumb-location" onclick="goHome()">Locations</span>
+    <span class="crumb-sep" id="sep1" style="display:none">›</span>
+    <span class="crumb" id="crumb-category" style="display:none"></span>
+    <span class="crumb-sep" id="sep2" style="display:none">›</span>
+    <span class="crumb" id="crumb-job" style="display:none"></span>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<div id="start-over-bar">
+  <button id="start-over-btn" onclick="startOver()">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="1 4 1 10 7 10"/>
+      <path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+    </svg>
+    Start Over
+  </button>
+</div>
+
+<script>
+const RAW_JOBS = [
+  {posting:10000,clinic:"Victoria Square Dental",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200832404359_1&source=CC3"},
+  {posting:10017,clinic:"Underhill Dental",title:"Dental Receptionist",category:"Reception - Clinic",status:"",city:"North York",province:"ON",salary:"25 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200833092268_1&source=CC3"},
+  {posting:10024,clinic:"Square One Dental",title:"Senior Office Manager",category:"Clinic Management",status:"FT",city:"Mississauga",province:"ON",salary:"Up to 85000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200833438237_1&source=CC3"},
+  {posting:10039,clinic:"Clinic in North York",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"North York",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200833798251_1&source=CC3"},
+  {posting:10040,clinic:"Clinic in Regina",title:"Associate Orthodontist",category:"Dental Specialist",status:"PT",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200833807888_1&source=CC3"},
+  {posting:10043,clinic:"Abby Dental Care",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Vernon",province:"BC",salary:"28 To 35 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200833841581_1&source=CC3"},
+  {posting:10072,clinic:"Alberta",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200834506022_1&source=CC3"},
+  {posting:10076,clinic:"Apple's Dental Group",title:"Dental Hygienist",category:"Hygienist",status:"FT",city:"Ottawa",province:"ON",salary:"52 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200834782973_1&source=CC3"},
+  {posting:10103,clinic:"Clinic in Brampton",title:"Associate Oral Surgeon",category:"Dental Specialist",status:"FT",city:"Brampton",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200835867321_1&source=CC3"},
+  {posting:10112,clinic:"Alberta",title:"Fly-In/Fly-Out  Associate Dentist",category:"Associate Dentist",status:"",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200836043525_1&source=CC3"},
+  {posting:10116,clinic:"Confidential Clinic, Regina, SK",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200836155475_1&source=CC3"},
+  {posting:10126,clinic:"Clinic in Red Deer",title:"Flexible Locum Dentist Opportunities Across Alberta",category:"Associate Dentist",status:"",city:"Red Deer",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200836458827_1&source=CC3"},
+  {posting:10154,clinic:"Seawall Dental",title:"Treatment Coordinator/Administrator",category:"Reception - Clinic",status:"FT",city:"West Vancouver",province:"BC",salary:"32 To 36 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200837352737_1&source=CC3"},
+  {posting:10168,clinic:"Dental Studio Pediatrics",title:"Associate Pediatric Dentist",category:"Dental Specialist",status:"",city:"Windsor",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200837528787_1&source=CC3"},
+  {posting:10171,clinic:"Connexion Dental Care",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Vanier",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200837529904_1&source=CC3"},
+  {posting:10175,clinic:"Oasis Family Dental - Edwards St",title:"Locum Associate Dentist",category:"Associate Dentist",status:"",city:"Thunder Bay",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200837531042_1&source=CC3"},
+  {posting:10192,clinic:"Dental Studio Avondale, London ON",title:"Dental Hygienist",category:"Hygienist",status:"FT",city:"London",province:"ON",salary:"45.00 To 50.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200837878922_1&source=CC3"},
+  {posting:10204,clinic:"Cariboo Dental Clinic",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Williams Lake",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200838055480_1&source=CC3"},
+  {posting:10237,clinic:"Eastboro Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Ottawa",province:"ON",salary:"28 To 40 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200839229582_1&source=CC3"},
+  {posting:10247,clinic:"Clinic in Georgetown",title:"Administrative Assistant",category:"Reception - Clinic",status:"FT",city:"Georgetown",province:"ON",salary:"23 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200839725241_1&source=CC3"},
+  {posting:10265,clinic:"Clinic in Burnaby",title:"Certified Dental Assistant",category:"Dental Assistant",status:"PT",city:"Burnaby",province:"BC",salary:"37.00 To 40.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200840424902_1&source=CC3"},
+  {posting:10268,clinic:"Harrow Dental",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Harrow",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200840567526_1&source=CC3"},
+  {posting:10270,clinic:"CGS Dentistry",title:"Certified Dental Assistant",category:"Dental Assistant",status:"PT",city:"Coquitlam",province:"BC",salary:"28 To 35 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200840681934_1&source=CC3"},
+  {posting:10287,clinic:"Ontario",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT 20+",city:"Mississauga",province:"ON",salary:"50.00 To 58.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200841898666_1&source=CC3"},
+  {posting:10318,clinic:"McKenney Corner Dental",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"St. Albert",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200844038450_1&source=CC3"},
+  {posting:10329,clinic:"Clinic in Nepean",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Nepean",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200845026038_1&source=CC3"},
+  {posting:10365,clinic:"Quad Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"North York",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200846073567_1&source=CC3"},
+  {posting:10377,clinic:"Clinic in Toronto",title:"PPC Analyst",category:"Marketing",status:"FT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200846314568_1&source=CC3"},
+  {posting:10379,clinic:"Clinic in Toronto",title:"SEO Copywriter Manager, Toronto",category:"Marketing",status:"FT",city:"Toronto",province:"ON",salary:"70000.00 To 100000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200846342760_1&source=CC3"},
+  {posting:10381,clinic:"All Smiles Dentistry",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Edmonton",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200846351363_1&source=CC3"},
+  {posting:10383,clinic:"Metroplex Dental",title:"Dental Receptionist",category:"Reception - Clinic",status:"",city:"Burnaby",province:"BC",salary:"28 To 34 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200846473707_1&source=CC3"},
+  {posting:10386,clinic:"Clinic in Toronto",title:"Search Engine Optimization Manager, Toronto",category:"Marketing",status:"FT",city:"Toronto",province:"ON",salary:"70000.00 To 100000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200846570104_1&source=CC3"},
+  {posting:10393,clinic:"Clinic in Sidney",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT 20+",city:"Sidney",province:"BC",salary:"55 To 65 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200846657364_1&source=CC3"},
+  {posting:10410,clinic:"Ottawa",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200847411133_1&source=CC3"},
+  {posting:10422,clinic:"Kawartha Lakes",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Lindsay",province:"ON",salary:"47 To 50 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200847730330_1&source=CC3"},
+  {posting:10427,clinic:"Mike the Molar",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Trenton",province:"ON",salary:"22 To 26 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200847816412_1&source=CC3"},
+  {posting:10435,clinic:"Williams Lakes Smiles",title:"Hygienist",category:"Hygienist",status:"FT",city:"Williams Lake",province:"BC",salary:"58 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200848073150_1&source=CC3"},
+  {posting:10438,clinic:"Clinic in Saint John",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Saint John",province:"NB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200848182356_1&source=CC3"},
+  {posting:10439,clinic:"Otter Creek Dental",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Tillsonburg",province:"ON",salary:"24 To 26 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200848196015_1&source=CC3"},
+  {posting:10461,clinic:"BC",title:"Dental Administrator",category:"Administrative",status:"",city:"Burnaby",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200848654298_1&source=CC3"},
+  {posting:10462,clinic:"Bridgewater Richmond Dentist",title:"Dental Receptionist",category:"Reception - Clinic",status:"",city:"Richmond",province:"BC",salary:"20 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200848691399_1&source=CC3"},
+  {posting:10478,clinic:"Dundas Ossington Dentistry",title:"Registered Dental Hygienist",category:"Hygienist",status:"",city:"Toronto",province:"ON",salary:"50 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200849264370_1&source=CC3"},
+  {posting:10479,clinic:"Clinic in Toronto",title:"Associate Talent Development Director",category:"Human Resources",status:"FT",city:"Toronto",province:"ON",salary:"90000.00 To 136000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200849278724_1&source=CC3"},
+  {posting:10498,clinic:"Impressions Dental, Deseronto",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Deseronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200849700962_1&source=CC3"},
+  {posting:10501,clinic:"Clinic in Toronto",title:"Manager, Construction Projects",category:"Management",status:"FT",city:"Toronto",province:"ON",salary:"91000.00 To 135000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200849737064_1&source=CC3"},
+  {posting:10515,clinic:"Clinic in Prince George",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Prince George",province:"BC",salary:"27 To 34 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200850199170_1&source=CC3"},
+  {posting:10518,clinic:"Main Street Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Moose Jaw",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200850211727_1&source=CC3"},
+  {posting:10522,clinic:"Vivo Dental Westbrook",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200850311226_1&source=CC3"},
+  {posting:10556,clinic:"Landmark Dental Centre, Sidney, BC",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Sidney",province:"BC",salary:"25 To 36 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851403267_1&source=CC3"},
+  {posting:10560,clinic:"Urban Dental Centre",title:"Dental Hygienist",category:"Hygienist",status:"PT",city:"Mississauga",province:"ON",salary:"47 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851723459_1&source=CC3"},
+  {posting:10561,clinic:"West Van Dental Group",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"West Vancouver",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851729703_1&source=CC3"},
+  {posting:10563,clinic:"Clinic in Toronto",title:"Associate Pedodontist",category:"Dental Specialist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851734644_1&source=CC3"},
+  {posting:10571,clinic:"Acu Dental, Burnaby, BC",title:"Dental Receptionist",category:"Reception - Clinic",status:"PT <20",city:"Burnaby",province:"BC",salary:"29 To 32 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851842304_1&source=CC3"},
+  {posting:10572,clinic:"ACU Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT <20",city:"Burnaby",province:"BC",salary:"55 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851843337_1&source=CC3"},
+  {posting:10574,clinic:"Northwood Family Dental",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Thunder Bay",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851883669_1&source=CC3"},
+  {posting:10576,clinic:"Brinkley Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Brampton",province:"ON",salary:"23 To 25 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200851959148_1&source=CC3"},
+  {posting:10592,clinic:"Twelfth & 8th Dental",title:"Registered Dental Assistant",category:"Dental Assistant",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200852520548_1&source=CC3"},
+  {posting:10611,clinic:"Roblin Dental Centre",title:"Registered Dental Assistant",category:"Dental Assistant",status:"FT",city:"Roblin",province:"MB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200852842152_1&source=CC3"},
+  {posting:10629,clinic:"Dentistry on Dundas",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Whitby",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200853522480_1&source=CC3"},
+  {posting:10639,clinic:"Grandview Corners Dental",title:"Hygienist",category:"Hygienist",status:"PT",city:"Surrey",province:"BC",salary:"59 To 61 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200853878318_1&source=CC3"},
+  {posting:10648,clinic:"Dr. Caroline Brisson Dental Center, Ottawa",title:"Hygienist",category:"Hygienist",status:"PT <20",city:"Ottawa",province:"ON",salary:"50 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854040430_1&source=CC3"},
+  {posting:10651,clinic:"Dr. Caroline Brisson Dental Centre",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Ottawa",province:"ON",salary:"22.00 To 26.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854074822_1&source=CC3"},
+  {posting:10653,clinic:"Clinic in Stettler",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Stettler",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854078600_1&source=CC3"},
+  {posting:10656,clinic:"Urban Smiles, Victoria, BC",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Victoria",province:"BC",salary:"32 To 36 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854094532_1&source=CC3"},
+  {posting:10667,clinic:"Altima Morrisburg Dental",title:"Dental Assistant",category:"Dental Assistant",status:"PT <20",city:"Morrisburg",province:"ON",salary:"25 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854299202_1&source=CC3"},
+  {posting:10677,clinic:"Studio Dental Eaton Center, Toronto, ON",title:"Office Manager",category:"Clinic Management",status:"",city:"Toronto",province:"ON",salary:"65000.00 To 70000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854782211_1&source=CC3"},
+  {posting:10682,clinic:"Downtown Dental Victoria",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Victoria",province:"BC",salary:"32 To 40 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854863373_1&source=CC3"},
+  {posting:10684,clinic:"Saskatchewan",title:"Manager, Clinical Development",category:"Management",status:"PT",city:"Burnaby",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200854900095_1&source=CC3"},
+  {posting:10703,clinic:"GTA Clinics",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Toronto North",province:"ON",salary:"50.00 To 58.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200855349397_1&source=CC3"},
+  {posting:10721,clinic:"Dufferin Mall Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200855753001_1&source=CC3"},
+  {posting:10725,clinic:"Creekside Dental Clinic",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Kelowna",province:"BC",salary:"Up to 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856006574_1&source=CC3"},
+  {posting:10729,clinic:"Newest Smile Dental",title:"Hygienist",category:"Hygienist",status:"PT",city:"New Westminster",province:"BC",salary:"50 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856138931_1&source=CC3"},
+  {posting:10735,clinic:"Ambrosi Place Dental Care, Kelowna BC",title:"Administrative Assistant",category:"Administrative",status:"FT",city:"Kelowna",province:"BC",salary:"25 To 29 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856289022_1&source=CC3"},
+  {posting:10736,clinic:"West Broadway Dentist, Vancouver, BC",title:"Certified Dental Assistant",category:"Dental Assistant",status:"",city:"Vancouver",province:"BC",salary:"30 To 38 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856292513_1&source=CC3"},
+  {posting:10739,clinic:"Bur Oak Dental, Makham, ON",title:"Certified Dental Assistant",category:"Dental Assistant",status:"PT",city:"Markham",province:"ON",salary:"25 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856325645_1&source=CC3"},
+  {posting:10741,clinic:"Clinic in Toronto",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Toronto",province:"ON",salary:"50 To 52 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856344362_1&source=CC3"},
+  {posting:10742,clinic:"Clinic in Delta",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Delta",province:"BC",salary:"36 To 45 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856368728_1&source=CC3"},
+  {posting:10755,clinic:"Heritage Drive Dental, LaSalle",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856629465_1&source=CC3"},
+  {posting:10756,clinic:"Medland Dental, Regina, SK",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856629884_1&source=CC3"},
+  {posting:10758,clinic:"Clinic in Burnaby",title:"Business Development Director",category:"Business Developmnt",status:"FT",city:"Burnaby",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856635272_1&source=CC3"},
+  {posting:10760,clinic:"Dental Studio Avondale",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"London",province:"ON",salary:"45 To 50 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856671061_1&source=CC3"},
+  {posting:10765,clinic:"Elles Birch Dental",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Scarborough",province:"ON",salary:"26 To 29 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200856991321_1&source=CC3"},
+  {posting:10766,clinic:"Clinic in Toronto",title:"Ontario Facilities  Coordinator",category:"Administrative",status:"FT",city:"Toronto",province:"ON",salary:"57920.00 To 72400.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857023330_1&source=CC3"},
+  {posting:10768,clinic:"Maple Place Dental Centre",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Maple Ridge",province:"BC",salary:"55 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857094312_1&source=CC3"},
+  {posting:10769,clinic:"Studio Dental - Eaton Centre",title:"Treatment Coordinator",category:"Reception - Clinic",status:"",city:"Toronto",province:"ON",salary:"30 To 32 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857162126_1&source=CC3"},
+  {posting:10770,clinic:"Summit Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857172362_1&source=CC3"},
+  {posting:10774,clinic:"Appletree Dental for Kids, Newmarket, ON",title:"Administrator",category:"Reception - Clinic",status:"PT",city:"Newmarket",province:"ON",salary:"19 To 23 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857316789_1&source=CC3"},
+  {posting:10775,clinic:"Clinic in Sault Ste. Marie",title:"Registered Dental Hygienist-Sault Ste. Marie",category:"Hygienist",status:"FT",city:"Sault Ste. Marie",province:"ON",salary:"46 To 48 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857321288_1&source=CC3"},
+  {posting:10780,clinic:"Uptown dental @Trafalgar, Oakville, ON",title:"Office Manager",category:"Clinic Management",status:"",city:"Oakville",province:"ON",salary:"65000.00 To 75000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857501894_1&source=CC3"},
+  {posting:10783,clinic:"Evergreen Dental Centre, Surrey, BC",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"Surrey",province:"BC",salary:"26 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857517731_1&source=CC3"},
+  {posting:10785,clinic:"Regina Lakeview Dental Centre",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857597092_1&source=CC3"},
+  {posting:10787,clinic:"Brush Dental Dundas",title:"Hygienist",category:"Hygienist",status:"PT <20",city:"Toronto",province:"ON",salary:"45 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857681734_1&source=CC3"},
+  {posting:10790,clinic:"Peachtree Kids Dental",title:"Associate Pedodontics",category:"Dental Specialist",status:"PT",city:"Brantford",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857745835_1&source=CC3"},
+  {posting:10791,clinic:"Kerrisdale House of Dentistry",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"Vancouver",province:"BC",salary:"30 To 35 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857751403_1&source=CC3"},
+  {posting:10793,clinic:"Birchland Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Ponoka",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857863033_1&source=CC3"},
+  {posting:10797,clinic:"Clinic in Sault Ste. Marie",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Sault Ste. Marie",province:"ON",salary:"29 To 31 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857898031_1&source=CC3"},
+  {posting:10802,clinic:"Taunton Village Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Oshawa",province:"ON",salary:"26 To 29 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857922814_1&source=CC3"},
+  {posting:10804,clinic:"Taunton Village Dental",title:"Treatment Coordinator",category:"Reception - Clinic",status:"",city:"Oshawa",province:"ON",salary:"26 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857924589_1&source=CC3"},
+  {posting:10805,clinic:"Downtown Ottawa",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857933510_1&source=CC3"},
+  {posting:10806,clinic:"Vimy Bridge Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857935342_1&source=CC3"},
+  {posting:10807,clinic:"Smile Care Dental Care",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857939041_1&source=CC3"},
+  {posting:10808,clinic:"Vimy Bridge Dental",title:"Associate Oral Surgeon",category:"Dental Specialist",status:"PT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857944647_1&source=CC3"},
+  {posting:10810,clinic:"Ottawa",title:"Associate Endodontist",category:"Dental Specialist",status:"PT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857949981_1&source=CC3"},
+  {posting:10811,clinic:"Downtown Ottawa",title:"Associate Oral Surgeon",category:"Dental Specialist",status:"PT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200857951941_1&source=CC3"},
+  {posting:10815,clinic:"Wharncliffe Dental, London",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"London",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858026489_1&source=CC3"},
+  {posting:10829,clinic:"Clinic in Russell",title:"Registered Dental Hygienist-Bright Dental Centre",category:"Hygienist",status:"FT",city:"Russell",province:"ON",salary:"48 To 54 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858321491_1&source=CC3"},
+  {posting:10830,clinic:"Ambrosi Place Dental Care, Kelowna",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Kelowna",province:"BC",salary:"Up to 35 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858354781_1&source=CC3"},
+  {posting:10833,clinic:"Downtown Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Victoria",province:"BC",salary:"58 To 62 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858427828_1&source=CC3"},
+  {posting:10837,clinic:"Quad Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"North York",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858448492_1&source=CC3"},
+  {posting:10838,clinic:"Clinic in North York",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"North York",province:"ON",salary:"20 To 24 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858451344_1&source=CC3"},
+  {posting:10840,clinic:"Kensington Dental, Kensington, PE",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Kensington",province:"PE",salary:"24 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858578645_1&source=CC3"},
+  {posting:10842,clinic:"Studio Dental - Union Station",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Toronto",province:"ON",salary:"25 To 32 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858654333_1&source=CC3"},
+  {posting:10843,clinic:"Studio Dental - Union Station",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858659797_1&source=CC3"},
+  {posting:10846,clinic:"Oakville (10846)",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Oakville",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858795692_1&source=CC3"},
+  {posting:10847,clinic:"Dr. Jordan Pettigrew",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858806969_1&source=CC3"},
+  {posting:10848,clinic:"Heritage Drive Dental",title:"Certified Dental Assistant Level ll",category:"Dental Assistant",status:"FT",city:"Windsor",province:"ON",salary:"27.00 To 29.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858827529_1&source=CC3"},
+  {posting:10850,clinic:"Morris Dental Group, Lively, ON",title:"Certified Dental Assistant",category:"Dental Assistant",status:"",city:"Lively",province:"ON",salary:"27 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858874306_1&source=CC3"},
+  {posting:10855,clinic:"Dental Health Group, Walkers Line",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Burlington",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200858993333_1&source=CC3"},
+  {posting:10859,clinic:"Red Deer (10859)",title:"Associate Dentist",category:"Associate Dentist",status:"Temp FT",city:"Red Deer",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859093377_1&source=CC3"},
+  {posting:10860,clinic:"Birchland Dental",title:"Associate Dentist",category:"Associate Dentist",status:"Temp FT",city:"Ponoka",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859093794_1&source=CC3"},
+  {posting:10871,clinic:"Donly Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Simcoe",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859501137_1&source=CC3"},
+  {posting:10874,clinic:"Clinic in Toronto",title:"Administrative Assistant",category:"Reception - Clinic",status:"FT",city:"Toronto",province:"ON",salary:"24.00 To 28.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859536830_1&source=CC3"},
+  {posting:10876,clinic:"Heritage Dental, Orangeville, ON",title:"Administrator",category:"Reception - Clinic",status:"FT",city:"Orangeville",province:"ON",salary:"23 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859610189_1&source=CC3"},
+  {posting:10878,clinic:"Vivo Dental-Glendale, Calgary, AB",title:"Registered Dental Assistant",category:"Dental Assistant",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859626498_1&source=CC3"},
+  {posting:10884,clinic:"Sunset Dental,  St. Thomas, ON",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Saint Thomas",province:"ON",salary:"23.00 To 27.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859723255_1&source=CC3"},
+  {posting:10885,clinic:"Sedona Dental, Calgary, AB",title:"Registered Dental Assistant",category:"Dental Assistant",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859734676_1&source=CC3"},
+  {posting:10886,clinic:"West Van Dental Group, Vancouver, BC",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"West Vancouver",province:"BC",salary:"28 To 38 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859773199_1&source=CC3"},
+  {posting:10890,clinic:"Clinic in Mississauga",title:"Patient Coordinator",category:"Reception - Clinic",status:"",city:"Mississauga",province:"ON",salary:"25 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859863859_1&source=CC3"},
+  {posting:10892,clinic:"Clinic in Toronto",title:"Accounts Payable Coordinator",category:"Accounting",status:"FT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859909115_1&source=CC3"},
+  {posting:10895,clinic:"Surrey Endo, Surrey, BC",title:"Certified Dental Assistant",category:"Dental Assistant",status:"",city:"Surrey",province:"BC",salary:"25 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200859959094_1&source=CC3"},
+  {posting:10899,clinic:"Willow Dental Care Langley, Langley, BC",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Langley",province:"BC",salary:"80000.00 To 90000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860178571_1&source=CC3"},
+  {posting:10900,clinic:"Concept Dental Centre",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT 20+",city:"Prince George",province:"BC",salary:"50 To 58 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860184172_1&source=CC3"},
+  {posting:10903,clinic:"Ebbers Family Dental",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Edmonton",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860247626_1&source=CC3"},
+  {posting:10907,clinic:"Clinic in Winnipeg",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"Winnipeg",province:"MB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860599792_1&source=CC3"},
+  {posting:10910,clinic:"Toronto 10910",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860720268_1&source=CC3"},
+  {posting:10911,clinic:"Clinic in Little Current",title:"Dental Hygienist-Little Current Dental Centre",category:"Hygienist",status:"",city:"Little Current",province:"ON",salary:"42.00 To 48.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860728669_1&source=CC3"},
+  {posting:10916,clinic:"Birchland Dental,  Ponoka, AB",title:"Treatment Coordinator",category:"Reception - Clinic",status:"FT",city:"Ponoka",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860843360_1&source=CC3"},
+  {posting:10919,clinic:"Connexion Dental",title:"Admin Senior",category:"Reception - Clinic",status:"PT",city:"Vanier",province:"ON",salary:"20 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200860998843_1&source=CC3"},
+  {posting:10925,clinic:"Brightview Dental, Strathroy",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Strathroy",province:"ON",salary:"45 To 53 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861305144_1&source=CC3"},
+  {posting:10926,clinic:"Clinic in Toronto",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Toronto",province:"ON",salary:"25 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861309663_1&source=CC3"},
+  {posting:10927,clinic:"Studio Dental Fairview Mall",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT 20+",city:"Toronto",province:"ON",salary:"50 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861317896_1&source=CC3"},
+  {posting:10934,clinic:"Clinic in Toronto",title:"VP, Operations Central and Ontario West",category:"Executive",status:"FT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861411275_1&source=CC3"},
+  {posting:10943,clinic:"Creekside Dental Clinic",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Kelowna",province:"BC",salary:"Up to 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861605880_1&source=CC3"},
+  {posting:10945,clinic:"Dental Studio Peel Centre Dr",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Brampton",province:"ON",salary:"47 To 50 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861613533_1&source=CC3"},
+  {posting:10946,clinic:"Square One Dental, Mississauga, ON",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Mississauga",province:"ON",salary:"26 To 29 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861647276_1&source=CC3"},
+  {posting:10947,clinic:"Square One Dental, Mississauga, ON",title:"Administrator",category:"Reception - Clinic",status:"FT",city:"Mississauga",province:"ON",salary:"25 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861659295_1&source=CC3"},
+  {posting:10949,clinic:"Arbutus North Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Vancouver",province:"BC",salary:"58 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861667357_1&source=CC3"},
+  {posting:10952,clinic:"Grand Village Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Peterborough",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861800881_1&source=CC3"},
+  {posting:10954,clinic:"London, Ontario (10954)",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"London",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861828971_1&source=CC3"},
+  {posting:10957,clinic:"Studio Dental - Fairview Mall",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861922838_1&source=CC3"},
+  {posting:10958,clinic:"Downtown Dental - Vancouver BC",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Vancouver",province:"BC",salary:"59 To 62 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200861926969_1&source=CC3"},
+  {posting:10961,clinic:"Bower Dental, Red Deer, AB",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Red Deer",province:"AB",salary:"30 To 37 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862130502_1&source=CC3"},
+  {posting:10962,clinic:"Riverside Dental, Drumheller, AB",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Drumheller",province:"AB",salary:"35 To 39 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862130831_1&source=CC3"},
+  {posting:10966,clinic:"Carrville Family Dentistry",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Richmond Hill",province:"ON",salary:"25.00 To 28.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862213754_1&source=CC3"},
+  {posting:10967,clinic:"Bloor West Smiles",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Toronto",province:"ON",salary:"25.00 To 27.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862215968_1&source=CC3"},
+  {posting:10969,clinic:"Clinic in Toronto North",title:"Dental Hygienist-Thunder Bay",category:"Hygienist",status:"FT",city:"Toronto North",province:"ON",salary:"37 To 40 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862242751_1&source=CC3"},
+  {posting:10971,clinic:"Bright Dental Centre",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Russell",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862281506_1&source=CC3"},
+  {posting:10981,clinic:"Dr. Brian Friedman, Toronto, ON",title:"Patient Coordinator",category:"Reception - Clinic",status:"PT",city:"Toronto",province:"ON",salary:"20 To 24 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862510994_1&source=CC3"},
+  {posting:10988,clinic:"Twelfth & 8th Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862619489_1&source=CC3"},
+  {posting:10989,clinic:"Arvanitis & Associates",title:"Patient Coordinator",category:"Reception - Clinic",status:"",city:"Waterloo",province:"ON",salary:"22 To 26 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862630327_1&source=CC3"},
+  {posting:10992,clinic:"Bridgewater Richmond Dentist",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT <20",city:"Richmond",province:"BC",salary:"55 To 65 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862680132_1&source=CC3"},
+  {posting:10995,clinic:"Village Mall Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Red Deer",province:"AB",salary:"60 To 65 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862684400_1&source=CC3"},
+  {posting:11002,clinic:"Babin Dentistry",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Victoria",province:"BC",salary:"32 To 36 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862844729_1&source=CC3"},
+  {posting:11005,clinic:"Clinic in Victoria",title:"Hygienist",category:"Hygienist",status:"PT",city:"Victoria",province:"BC",salary:"55 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862888210_1&source=CC3"},
+  {posting:11008,clinic:"Acu Dental & Orthodontics",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Burnaby",province:"BC",salary:"29 To 32 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862923246_1&source=CC3"},
+  {posting:11009,clinic:"Rocky Point Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"",city:"Port Moody",province:"BC",salary:"34 To 38 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200862936039_1&source=CC3"},
+  {posting:11013,clinic:"Sunridge Dental",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200863077233_1&source=CC3"},
+  {posting:11015,clinic:"Clinic in Calgary",title:"Registered Dental Assistant",category:"Dental Assistant",status:"",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200863088297_1&source=CC3"},
+  {posting:11018,clinic:"Merivale Mall Dental, Ottawa, ON",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Nepean",province:"ON",salary:"28.00 To 34.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200863119507_1&source=CC3"},
+  {posting:11019,clinic:"Dental Studio Mississauga Rd",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"Brampton",province:"ON",salary:"26 To 27 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200863129903_1&source=CC3"},
+  {posting:11024,clinic:"East Village Dental",title:"Hygiene/Treatment Coordinator",category:"Reception - Clinic",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200863527344_1&source=CC3"},
+  {posting:11027,clinic:"Southland Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864035005_1&source=CC3"},
+  {posting:11041,clinic:"Clinic in Toronto",title:"Associate Billing Analyst",category:"Corporate",status:"",city:"Toronto",province:"ON",salary:"57920.00 To 86880.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864210659_1&source=CC3"},
+  {posting:11042,clinic:"Grandvillage Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Peterborough",province:"ON",salary:"25.00 To 30.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864229287_1&source=CC3"},
+  {posting:11043,clinic:"Mercato Dental Centre",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"Vancouver",province:"BC",salary:"24 To 32 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864233202_1&source=CC3"},
+  {posting:11044,clinic:"Stony Plain Dental Centre",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Stony Plain",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864272679_1&source=CC3"},
+  {posting:11047,clinic:"Willoughby Town Centre Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"",city:"Langley",province:"BC",salary:"34 To 40 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864329849_1&source=CC3"},
+  {posting:11048,clinic:"Dental Studio Avondale",title:"Periodontist",category:"Dental Specialist",status:"PT",city:"London",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864403131_1&source=CC3"},
+  {posting:11049,clinic:"London, Ontario (11049)",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"London",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864405989_1&source=CC3"},
+  {posting:11050,clinic:"123Dentist Toronto",title:"Office Manager / Treatment Coordinator",category:"Clinic Management",status:"",city:"Toronto",province:"ON",salary:"30 To 35 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864428937_1&source=CC3"},
+  {posting:11052,clinic:"Leigh Smile Center",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Westlock",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864515000_1&source=CC3"},
+  {posting:11053,clinic:"Stony Plain Dental Centre",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Stony Plain",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864563844_1&source=CC3"},
+  {posting:11054,clinic:"Clinic in Stony Plain",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Stony Plain",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864566766_1&source=CC3"},
+  {posting:11060,clinic:"Clinic in Brantford",title:"Dental Hygienist-Peachtree Kids Dental",category:"Hygienist",status:"FT",city:"Brantford",province:"ON",salary:"47 To 48 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864698750_1&source=CC3"},
+  {posting:11062,clinic:"Todays Family Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"PT",city:"Vaughan",province:"ON",salary:"26 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864768084_1&source=CC3"},
+  {posting:11063,clinic:"Playfair Dental",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Orangeville",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864780733_1&source=CC3"},
+  {posting:11064,clinic:"Merivale Mall Dental - Ottawa",title:"Dental Hygienist",category:"Hygienist",status:"FT",city:"Nepean",province:"ON",salary:"50 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864785783_1&source=CC3"},
+  {posting:11066,clinic:"Dental Studio - Mississauga Rd",title:"Dental Hygienists",category:"Hygienist",status:"PT",city:"Brampton",province:"ON",salary:"55 To 58 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864812204_1&source=CC3"},
+  {posting:11068,clinic:"Little Current Dental",title:"Administrative Assistant",category:"Reception - Clinic",status:"",city:"Little Current",province:"ON",salary:"19 To 22 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864841046_1&source=CC3"},
+  {posting:11069,clinic:"Port Coquitlam Dental Centre",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Port Coquitlam",province:"BC",salary:"58 To 62 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864841222_1&source=CC3"},
+  {posting:11071,clinic:"Clinic in Vancouver",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Vancouver",province:"BC",salary:"58 To 65 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864852822_1&source=CC3"},
+  {posting:11073,clinic:"Brush Dental Church",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"Toronto",province:"ON",salary:"22 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864947415_1&source=CC3"},
+  {posting:11077,clinic:"Dentrix Dental Care",title:"Hygiene Coordinator",category:"Reception - Clinic",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200864988964_1&source=CC3"},
+  {posting:11079,clinic:"Hillsview Dental Care",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Milton",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865068797_1&source=CC3"},
+  {posting:11080,clinic:"Mississauga, ON (11080)",title:"Certified Dental Assistant",category:"Dental Assistant",status:"",city:"Mississauga",province:"ON",salary:"23 To 27 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865074415_1&source=CC3"},
+  {posting:11082,clinic:"Compass Dental",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Campbell River",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865115340_1&source=CC3"},
+  {posting:11088,clinic:"Bristol Dental Clinic",title:"Chairside Dental Assistant",category:"Dental Assistant",status:"FT",city:"Mississauga",province:"ON",salary:"20 To 24 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865404938_1&source=CC3"},
+  {posting:11091,clinic:"Clinic in Chilliwack",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Chilliwack",province:"BC",salary:"80000.00 To 90000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865517128_1&source=CC3"},
+  {posting:11092,clinic:"Babin Dentistry",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Victoria",province:"BC",salary:"78000.00 To 88000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865546071_1&source=CC3"},
+  {posting:11093,clinic:"Hopedale Dental",title:"Dental Hygienist",category:"Hygienist",status:"PT",city:"Oakville",province:"ON",salary:"47 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865568657_1&source=CC3"},
+  {posting:11095,clinic:"Clinic in Toronto",title:"Manager, Financial Planning and Analysis",category:"Planning & Analysis",status:"FT",city:"Toronto",province:"ON",salary:"90000.00 To 135000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865592121_1&source=CC3"},
+  {posting:11098,clinic:"Vista Dental",title:"Dental Receptionist",category:"Reception - Clinic",status:"PT 20+",city:"Scarborough",province:"ON",salary:"20 To 24 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865705531_1&source=CC3"},
+  {posting:11100,clinic:"Altima Scotia Plaza",title:"Ortho Dental Hygienist",category:"Hygienist",status:"Casual",city:"Toronto",province:"ON",salary:"55 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865750916_1&source=CC3"},
+  {posting:11103,clinic:"Clinic in Madoc",title:"Hygienist",category:"Hygienist",status:"",city:"Madoc",province:"ON",salary:"48.00 To 55.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865758600_1&source=CC3"},
+  {posting:11104,clinic:"Clinic in Toronto",title:"Sr. Manager, Marketing Strategy & Campaigns",category:"Management",status:"FT",city:"Toronto",province:"ON",salary:"113000.00 To 135000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865778997_1&source=CC3"},
+  {posting:11105,clinic:"Clinic in Toronto",title:"M&A Integrations Coordinator",category:"Corporate Developmnt",status:"FT",city:"Toronto",province:"ON",salary:"55000.00 To 65000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865796708_1&source=CC3"},
+  {posting:11108,clinic:"Clinic in Toronto",title:"Registered Dental Hygienist-Stoney Creek",category:"Hygienist",status:"FT",city:"Toronto",province:"ON",salary:"45 To 55 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865806117_1&source=CC3"},
+  {posting:11111,clinic:"Studio Dental Union Station",title:"Dental Hygienist",category:"Hygienist",status:"PT",city:"Toronto",province:"ON",salary:"50 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865844901_1&source=CC3"},
+  {posting:11113,clinic:"Studio Dental Fairview Mall",title:"Orthodontic Associate",category:"Dental Specialist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865856517_1&source=CC3"},
+  {posting:11122,clinic:"Clinic in Vancouver",title:"Certified Dental Assistant-Yaletown Laser and Cosmetic Dentistry",category:"Dental Assistant",status:"",city:"Vancouver",province:"BC",salary:"26 To 36 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200865995314_1&source=CC3"},
+  {posting:11128,clinic:"Connexion Dental, Ottawa, ON",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Vanier",province:"ON",salary:"20 To 35 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866068470_1&source=CC3"},
+  {posting:11133,clinic:"Sunridge Dental",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866195065_1&source=CC3"},
+  {posting:11134,clinic:"Vancouver City Centre Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Vancouver",province:"BC",salary:"58 To 62 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866225900_1&source=CC3"},
+  {posting:11135,clinic:"Studio Dental Union Station",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866271188_1&source=CC3"},
+  {posting:11136,clinic:"Carrville Family, Richmond Hill, ON",title:"Certified Dental Assistant",category:"Dental Assistant",status:"PT 20+",city:"Richmond Hill",province:"ON",salary:"25 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866277288_1&source=CC3"},
+  {posting:11137,clinic:"Altima Jane Street, Toronto, ON",title:"Patient Coordinator",category:"Reception - Clinic",status:"FT",city:"North York",province:"ON",salary:"24 To 26 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866342167_1&source=CC3"},
+  {posting:11138,clinic:"Clinic in Toronto",title:"Vice President, Real Estate",category:"Corporate",status:"FT",city:"Toronto",province:"ON",salary:"177600.00 To 266400.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866348235_1&source=CC3"},
+  {posting:11139,clinic:"Main Street Dental, Moose, SK",title:"Patient Coordinator",category:"Reception - Clinic",status:"FT",city:"Moose Jaw",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866350230_1&source=CC3"},
+  {posting:11140,clinic:"Otter Creek Dental",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Tillsonburg",province:"ON",salary:"24 To 24 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866432301_1&source=CC3"},
+  {posting:11142,clinic:"West 85th Dental",title:"Registered Dental Assistant",category:"Dental Assistant",status:"PT 20+",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866464616_1&source=CC3"},
+  {posting:11143,clinic:"Studio Dental Union Station",title:"Administrator",category:"Reception - Clinic",status:"FT",city:"Toronto",province:"ON",salary:"25 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866595061_1&source=CC3"},
+  {posting:11144,clinic:"Williams Lake Smiles",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Williams Lake",province:"BC",salary:"32 To 36 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866603087_1&source=CC3"},
+  {posting:11145,clinic:"Clinic in Calgary",title:"Treatment Coordinator",category:"Reception - Clinic",status:"",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866623920_1&source=CC3"},
+  {posting:11146,clinic:"Lakeside Family Dental",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Burlington",province:"ON",salary:"23 To 27 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866633485_1&source=CC3"},
+  {posting:11147,clinic:"Dentrix Dental, Calgary, AB",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866645565_1&source=CC3"},
+  {posting:11148,clinic:"Creekside Dental, Kelowna, BC",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Kelowna",province:"BC",salary:"25 To 32 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866660276_1&source=CC3"},
+  {posting:11150,clinic:"Bradford Family Dentistry",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Bradford",province:"ON",salary:"26 To 27 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866678791_1&source=CC3"},
+  {posting:11151,clinic:"Crescent Oak Dental, Kitchener, ON",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"Kitchener",province:"ON",salary:"20 To 24 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866679960_1&source=CC3"},
+  {posting:11153,clinic:"Natures Design Dental, Delta, BC",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Delta",province:"BC",salary:"34 To 36 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866685638_1&source=CC3"},
+  {posting:11156,clinic:"Altima Port Hope Dental Centre",title:"Patient Coordinator",category:"Reception - Clinic",status:"PT",city:"Port Hope",province:"ON",salary:"25 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866899753_1&source=CC3"},
+  {posting:11157,clinic:"Gilmour Dental Centre, Ottawa, ON",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Toronto",province:"ON",salary:"28.00 To 34.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866905618_1&source=CC3"},
+  {posting:11158,clinic:"Mindemoya Dental",title:"Dental Hygienist",category:"Hygienist",status:"Temp FT",city:"Mindemoya",province:"ON",salary:"43 To 47 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866935760_1&source=CC3"},
+  {posting:11161,clinic:"Williams Lake Smiles",title:"Dental Administrator",category:"Administrative",status:"FT",city:"Williams Lake",province:"BC",salary:"25 To 29 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200866988959_1&source=CC3"},
+  {posting:11162,clinic:"Clinic in Toronto",title:"Manager, Regional Marketing (Ontario)",category:"Management",status:"FT",city:"Toronto",province:"ON",salary:"80000.00 To 100000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867001381_1&source=CC3"},
+  {posting:11164,clinic:"Clinic in Calgary",title:"Registered Dental Hygienist",category:"Hygienist",status:"PT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867011815_1&source=CC3"},
+  {posting:11167,clinic:"Mulberry Dental, Burnaby, BC",title:"Dental Receptionist",category:"Reception - Clinic",status:"",city:"Burnaby",province:"BC",salary:"28 To 32 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867063498_1&source=CC3"},
+  {posting:11168,clinic:"Bloor Dental Clinic",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867066714_1&source=CC3"},
+  {posting:11170,clinic:"Alberta",title:"Onboarding Manager",category:"Administrative",status:"FT",city:"Burnaby",province:"BC",salary:"100000.00 To 120000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867168053_1&source=CC3"},
+  {posting:11173,clinic:"12 Month Contract",title:"HR Service Centre Coordinator",category:"Human Resources",status:"Temp FT",city:"Toronto",province:"ON",salary:"52500.00 To 62500.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867184155_1&source=CC3"},
+  {posting:11175,clinic:"Studio Dental Square One",title:"Dental Administrator",category:"Reception - Clinic",status:"FT",city:"Mississauga",province:"ON",salary:"25 To 29 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867195678_1&source=CC3"},
+  {posting:11183,clinic:"Clinic in Gloucester",title:"Hygienist",category:"Hygienist",status:"PT",city:"Gloucester",province:"ON",salary:"50 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867280009_1&source=CC3"},
+  {posting:11186,clinic:"Underhill Dental",title:"Dental Receptionist",category:"Reception - Clinic",status:"FT",city:"North York",province:"ON",salary:"25 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867324627_1&source=CC3"},
+  {posting:11187,clinic:"Clinic in Burnaby",title:"Senior Talent Acquisition Advisor",category:"Human Resources",status:"FT",city:"Burnaby",province:"BC",salary:"80000.00 To 95000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867371866_1&source=CC3"},
+  {posting:11191,clinic:"Brightview Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"PT",city:"Strathroy",province:"ON",salary:"22 To 28 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867519239_1&source=CC3"},
+  {posting:11199,clinic:"Cedar Valley Dental Centre",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Nanaimo",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867588634_1&source=CC3"},
+  {posting:11200,clinic:"Leigh Smile Center",title:"Registered Dental Assistant",category:"Dental Assistant",status:"FT",city:"Westlock",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867597208_1&source=CC3"},
+  {posting:11202,clinic:"Studio Dental @ Upper Canada",title:"Office Manager",category:"Clinic Management",status:"",city:"Newmarket",province:"ON",salary:"65000.00 To 70000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867629336_1&source=CC3"},
+  {posting:11203,clinic:"Dental Health Group - Guelph and Walkers Line",title:"Dental Hygienist",category:"Hygienist",status:"PT",city:"Burlington",province:"ON",salary:"45 To 47 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867665429_1&source=CC3"},
+  {posting:11206,clinic:"Camgara Dental Group",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Vancouver",province:"BC",salary:"28 To 30 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867674104_1&source=CC3"},
+  {posting:11209,clinic:"Panatella Dental, Calgary, AB",title:"Dental Administrator",category:"Reception - Clinic",status:"",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867698673_1&source=CC3"},
+  {posting:11210,clinic:"Calgary (11210)",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Calgary",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867736952_1&source=CC3"},
+  {posting:11212,clinic:"Studio Dental Fairview",title:"Office Manager",category:"Clinic Management",status:"",city:"Toronto",province:"ON",salary:"60000.00 To 70000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867756928_1&source=CC3"},
+  {posting:11213,clinic:"Abby Dental Care",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Vernon",province:"BC",salary:"Up to 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867773553_1&source=CC3"},
+  {posting:11213,clinic:"Abby Dental Care",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Vernon",province:"BC",salary:"Up to 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867773553_1&source=CC3"},
+  {posting:11217,clinic:"Wesbrook Village Dental",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Vancouver",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867827380_1&source=CC3"},
+  {posting:11218,clinic:"Village Mall Dental",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Red Deer",province:"AB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867832647_1&source=CC3"},
+  {posting:11221,clinic:"Smiles at Summerhill",title:"Dental Hygienist",category:"Hygienist",status:"FT",city:"Newmarket",province:"ON",salary:"50 To 54 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867910337_1&source=CC3"},
+  {posting:11222,clinic:"Brockville (11222)",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Brockville",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200867924370_1&source=CC3"},
+  {posting:11224,clinic:"Altima College West Dental Centre",title:"Associate Dentist",category:"Associate Dentist",status:"PT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200868013955_1&source=CC3"},
+  {posting:11225,clinic:"Clinic in Port Perry",title:"Demtal Administrator",category:"Reception - Clinic",status:"FT",city:"Port Perry",province:"ON",salary:"20 To 27 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200868015774_1&source=CC3"},
+  {posting:11227,clinic:"Eastgate Dental, Hamilton, ON",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Hamilton",province:"ON",salary:"24 To 26 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200868038046_1&source=CC3"},
+  {posting:8664,clinic:"Ontario",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200791246171_1&source=CC3"},
+  {posting:8665,clinic:"Saskatchewan",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200791250716_1&source=CC3"},
+  {posting:8666,clinic:"Manitoba",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Winnipeg",province:"MB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200791251544_1&source=CC3"},
+  {posting:9168,clinic:"Clinic in Toronto",title:"Associate Orthodontist",category:"Dental Specialist",status:"PT 20+",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200803381147_1&source=CC3"},
+  {posting:9173,clinic:"Clinic in Toronto",title:"Associate Oral and Maxillo Facial Surgeon",category:"Dental Specialist",status:"FT",city:"Toronto",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200803572016_1&source=CC3"},
+  {posting:9421,clinic:"Altima Kingston Dental Centre",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Kingston",province:"ON",salary:"52.00 To 55.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200814037575_1&source=CC3"},
+  {posting:9551,clinic:"Ottawa, ON-9551",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200817498175_1&source=CC3"},
+  {posting:9587,clinic:"Mynt Dental",title:"Dental Hygienist",category:"Hygienist",status:"FT",city:"Winnipeg",province:"MB",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200818920077_1&source=CC3"},
+  {posting:9731,clinic:"Siwoski Dental",title:"Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Vernon",province:"BC",salary:"55 To 60 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200824173853_1&source=CC3"},
+  {posting:9744,clinic:"Morris Dental Group",title:"Associate Dentist",category:"Associate Dentist",status:"",city:"Lively",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200824455858_1&source=CC3"},
+  {posting:9782,clinic:"Confidential Clinic, Ottawa, ON-9782",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Ottawa",province:"ON",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200825256839_1&source=CC3"},
+  {posting:9830,clinic:"Sunny Shores Dental",title:"Associate Dentist",category:"Associate Dentist",status:"FT",city:"Kamloops",province:"BC",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200826661708_1&source=CC3"},
+  {posting:9836,clinic:"Clinic in Vancouver",title:"Fly-In/Fly-Out Opportunity - Registered Dental Hygienist",category:"Hygienist",status:"FT",city:"Vancouver",province:"BC",salary:"55 To 65 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200826819656_1&source=CC3"},
+  {posting:9870,clinic:"Urban Orthodontics",title:"Certified Dental Assistant, Ortho",category:"Dental Assistant",status:"",city:"Regina",province:"SK",salary:"",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200827556685_1&source=CC3"},
+  {posting:9884,clinic:"Western Canada (BC & AB)",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Toronto North",province:"ON",salary:"25 To 40 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200828049421_1&source=CC3"},
+  {posting:9921,clinic:"Willow Point Dental",title:"Certified Dental Assistant",category:"Dental Assistant",status:"FT",city:"Campbell River",province:"BC",salary:"33 To 38 (CAD) Hourly",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200829161199_1&source=CC3"},
+  {posting:9926,clinic:"Clinic in Victoria",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Victoria",province:"BC",salary:"78000.00 To 90000.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200829613835_1&source=CC3"},
+  {posting:9963,clinic:"Bridgewater Richmond Dentist",title:"Office Manager",category:"Clinic Management",status:"FT",city:"Richmond",province:"BC",salary:"77000.00 To 87500.00 (CAD) Annually",date:"Apr 19, 2026",url:"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=c2a72bdd-3357-40d4-ba1b-c98aada9201f&ccId=9200523617456_2&type=JS&lang=en_CA&jobId=9200830481000_1&source=CC3"}
+];
+
+const STATUS_LABELS = { FT:"Full-Time", PT:"Part-Time", "FT/PT":"Full-Time / Part-Time", "Temp FT":"Temp Full-Time", "Temp PT":"Temp Part-Time", "Temp FT/PT":"Temp Full-Time / Part-Time", Locum:"Locum", Casual:"Casual", "PT 20+":"PT (20+ hrs/wk)", "PT <20":"PT (<20 hrs/wk)" };
+const PROVINCE_NAMES = { ON:"Ontario", QC:"Quebec", BC:"British Columbia", AB:"Alberta", MB:"Manitoba", SK:"Saskatchewan", NS:"Nova Scotia", NB:"New Brunswick", NL:"Newfoundland", PE:"Prince Edward Island" };
+
+const locationMap = {};
+RAW_JOBS.forEach(j => {
+  const key = j.province;
+  if (!locationMap[key]) locationMap[key] = { province: j.province, jobs: [] };
+  locationMap[key].jobs.push(j);
+});
+
+let state = { step:'location', location:null, category:null };
+
+const iconPin = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+const iconBriefcase = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
+const iconHospital = `<svg width="506" height="506" viewBox="0 0 506 506" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" stroke="none" d="M 376.975006 173.727997 C 372.882996 171.47998 368.592987 169.576996 364.072998 168.171021 C 359.553009 166.765015 355.056 165.716003 350.329987 165.164978 C 345.67099 164.596008 340.984985 164.470001 336.27301 164.786987 C 331.559998 165.104004 326.976013 165.895996 322.432007 167.113007 C 317.888 168.330017 313.520996 169.936005 309.282013 172.015991 C 305.041992 174.096008 301.046997 176.546997 297.296997 179.369019 C 293.546997 182.190002 290.109009 185.364014 286.89801 188.841003 C 283.687012 192.317017 280.992004 196.09198 278.505005 200.101013 L 256.412994 186.830017 C 259.675995 181.377014 263.472992 176.289978 267.735992 171.587006 C 271.998993 166.884003 276.661011 162.582001 281.73999 158.751007 C 286.817993 154.919983 292.196014 151.661987 297.903992 148.825012 C 303.631012 146.056 309.571014 143.811005 315.674011 142.175995 C 321.778015 140.541992 328.045013 139.516998 334.390015 139.052979 C 340.734009 138.589996 347.039001 138.791016 353.354004 139.570984 C 359.667999 140.351013 365.838989 141.677979 371.902008 143.687988 C 377.946991 145.630981 383.779999 148.138 389.333008 151.22998 L 376.838989 173.764008 L 376.975006 173.727997 Z M 287.674988 383.709015 C 215.451004 403.053009 140.929993 360.143005 121.624001 288.126007 L 146.513 281.459991 C 162.164001 339.846008 222.496002 374.563995 281.022003 358.890015 C 339.546997 343.214996 374.429993 282.994995 358.778015 224.609009 L 383.666992 217.942993 C 402.98999 290.028015 359.899994 364.36499 287.674988 383.709015 Z M 83.277603 233.200989 C 86.540497 227.747986 90.337402 222.661011 94.6007 217.958008 C 98.863998 213.253998 103.526001 208.953003 108.603996 205.122009 C 113.682999 201.291016 119.060997 198.03302 124.768997 195.195984 C 130.496002 192.427002 136.436005 190.182007 142.539001 188.546997 C 148.643005 186.911987 154.910004 185.888 161.253998 185.424011 C 167.598999 184.960999 173.904007 185.161987 180.218002 185.942017 C 186.533005 186.721008 192.703995 188.049011 198.766998 190.059021 C 204.811996 192.001007 210.576996 194.526978 216.197998 197.601013 L 203.703995 220.13501 C 199.612 217.886993 195.322006 215.984009 190.802002 214.578003 C 186.350006 213.153992 181.785995 212.122986 177.059006 211.572021 C 172.399994 211.002991 167.714005 210.877014 163.001999 211.194 C 158.289993 211.510986 153.705002 212.302979 149.160995 213.52002 C 144.617004 214.737 140.25 216.343018 136.011002 218.423004 C 131.770996 220.502991 127.776001 222.953979 124.026001 225.776001 C 120.276001 228.596985 116.837997 231.770996 113.626999 235.247986 C 110.484001 238.705994 107.721001 242.498993 105.234001 246.507996 L 83.141998 233.237 L 83.277603 233.200989 Z M 187.384995 9.587097 C 52.633598 45.67749 -27.405899 183.912994 8.62372 318.317993 C 44.6534 452.721985 183.136002 532.504028 317.888 496.412994 C 452.639008 460.322998 532.677979 322.087006 496.631012 187.61499 C 460.583008 53.1427 322.135986 -26.503296 187.384995 9.587097 Z"/></svg>`;
+const iconChevron = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+const iconArrowLeft = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>`;
+
+function updateBreadcrumb() {
+  const cL=document.getElementById('crumb-location'), cC=document.getElementById('crumb-category'), cJ=document.getElementById('crumb-job');
+  const s1=document.getElementById('sep1'), s2=document.getElementById('sep2');
+  cL.className='crumb'+(state.step==='location'?' active':'');
+  if(state.location){
+    s1.style.display=''; cC.style.display='';
+    cC.textContent=`${PROVINCE_NAMES[state.location.province]||state.location.province}`;
+    cC.className='crumb'+(state.step==='category'?' active':'');
+    cC.onclick=()=>renderCategory();
+  } else { s1.style.display='none'; cC.style.display='none'; }
+  if(state.category){
+    s2.style.display=''; cJ.style.display='';
+    cJ.textContent=state.category;
+    cJ.className='crumb'+(state.step==='jobs'?' active':'');
+    cJ.onclick=()=>renderJobs();
+  } else { s2.style.display='none'; cJ.style.display='none'; }
+}
+
+function renderLocation() {
+  state={step:'location',location:null,category:null};
+  updateBreadcrumb();
+  gtag('event', 'search_started', { event_category: 'Kiosk', event_label: 'Where would you like to work?' });
+  const locations=Object.values(locationMap).sort((a,b)=>(PROVINCE_NAMES[a.province]||a.province).localeCompare(PROVINCE_NAMES[b.province]||b.province));
+  const c=document.getElementById('content');
+  c.scrollTop=0;
+  c.innerHTML=`
+    <div class="anim"><div class="screen-title">Where would you like to work?</div><div class="screen-subtitle">Select a province to explore available positions.</div></div>
+    <div class="card-grid">
+      ${locations.map((loc,i)=>`
+        <div class="option-card anim anim-d${Math.min(i+1,5)}" onclick="selectLocation('${loc.province}')">
+          <div class="card-icon">${iconPin}</div>
+          <div class="card-label">${PROVINCE_NAMES[loc.province]||loc.province}</div>
+          <div class="card-meta">${loc.jobs.length} opening${loc.jobs.length!==1?'s':''}</div>
+          <div class="card-arrow">${iconChevron}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function selectLocation(key){
+  state.location=locationMap[key];
+  gtag('event', 'province_selected', { event_category: 'Kiosk', event_label: PROVINCE_NAMES[key] || key });
+  renderCategory();
+}
+
+function renderCategory() {
+  state.step='category'; state.category=null;
+  updateBreadcrumb();
+  const cats={};
+  state.location.jobs.forEach(j=>{ const c=j.category.trim(); if(!cats[c])cats[c]=0; cats[c]++; });
+  const catIcon=c=>(['Associate Dentist','Hygienist','Dental Assistant','Dental Specialist'].includes(c))?iconHospital:iconBriefcase;
+  const ct=document.getElementById('content');
+  ct.scrollTop=0;
+  ct.innerHTML=`
+    <button class="back-btn anim" onclick="renderLocation()">${iconArrowLeft} All Provinces</button>
+    <div class="anim anim-d1"><div class="screen-title">What type of role?</div><div class="screen-subtitle">Positions in <strong>${PROVINCE_NAMES[state.location.province]||state.location.province}</strong></div></div>
+    <div class="card-grid centered">
+      ${Object.entries(cats).map(([cat,count],i)=>`
+        <div class="option-card anim anim-d${Math.min(i+2,5)}" onclick="selectCategory('${cat.replace(/'/g,"\\'")}')">
+          <div class="card-icon">${catIcon(cat)}</div>
+          <div class="card-label">${cat}</div>
+          <div class="card-meta">${count} opening${count!==1?'s':''}</div>
+          <div class="card-arrow">${iconChevron}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function selectCategory(cat){
+  state.category=cat;
+  gtag('event', 'role_type_selected', { event_category: 'Kiosk', event_label: cat });
+  renderJobs();
+}
+
+function renderJobs() {
+  state.step='jobs';
+  updateBreadcrumb();
+  const jobs=state.location.jobs.filter(j=>j.category.trim()===state.category.trim());
+  const ct=document.getElementById('content');
+  ct.scrollTop=0;
+  ct.innerHTML=`
+    <button class="back-btn anim" onclick="renderCategory()">${iconArrowLeft} Back</button>
+    <div class="anim anim-d1"><div class="screen-title">${state.category}</div><div class="screen-subtitle">${jobs.length} opening${jobs.length!==1?'s':''} in ${PROVINCE_NAMES[state.location.province]||state.location.province}</div></div>
+    <div class="job-list">
+      ${jobs.map((job,i)=>`
+        <div class="job-row anim anim-d${Math.min(i+2,5)}" onclick="renderJobDetail(${RAW_JOBS.indexOf(job)})">
+          <div class="job-row-body">
+            <div class="job-title">${job.title}</div>
+            <div class="job-clinic">${job.clinic}</div>
+            <div class="job-badges">
+              ${job.status?`<span class="badge badge-blue">${STATUS_LABELS[job.status]||job.status}</span>`:''}
+              <span class="badge badge-navy">${job.city}, ${job.province}</span>
+            </div>
+          </div>
+          <div class="job-row-arrow">${iconChevron}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderJobDetail(idx) {
+  const job=RAW_JOBS[idx];
+  gtag('event', 'job_viewed', { event_category: 'Kiosk', event_label: `${job.title} – ${job.clinic}`, job_title: job.title, clinic: job.clinic, province: job.province, posting: job.posting });
+  state.step='detail';
+  updateBreadcrumb();
+  const ct=document.getElementById('content');
+  ct.scrollTop=0;
+  ct.innerHTML=`
+    <button class="back-btn anim" onclick="renderJobs()">${iconArrowLeft} Back to Listings</button>
+    <div id="detail-view">
+      <div class="detail-header anim">
+        <div class="detail-clinic-icon">${['Associate Dentist','Hygienist','Dental Assistant','Dental Specialist'].includes(job.category.trim()) ? iconHospital : iconBriefcase}</div>
+        <div>
+          <div class="detail-title">${job.title} – ${job.clinic}</div>
+          <div class="job-badges">
+            ${job.status?`<span class="badge badge-blue">${STATUS_LABELS[job.status]||job.status}</span>`:''}
+            <span class="badge badge-navy">Posting #${job.posting}</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-body-left">
+          <div class="detail-grid anim anim-d1">
+            <div class="detail-fact"><div class="detail-fact-label">Location</div><div class="detail-fact-value">${job.city}, ${job.province}</div></div>
+            ${job.status?`<div class="detail-fact"><div class="detail-fact-label">Employment Type</div><div class="detail-fact-value">${STATUS_LABELS[job.status]||job.status}</div></div>`:''}
+            ${job.salary?`<div class="detail-fact"><div class="detail-fact-label">Salary</div><div class="detail-fact-value">${job.salary}</div></div>`:''}
+            <div class="detail-fact"><div class="detail-fact-label">Category</div><div class="detail-fact-value">${job.category.trim()}</div></div>
+          </div>
+          <div class="detail-section anim anim-d2">
+            <div class="detail-section-title">About this role</div>
+            <p>This is an open position at <strong>${job.clinic}</strong> for a <strong>${job.title}</strong> based in ${job.city}, ${PROVINCE_NAMES[job.province]||job.province}.${job.status?` The role is offered as a ${STATUS_LABELS[job.status]||job.status} position.`:''} Scan the QR code to the right or visit the official listing to view full responsibilities, qualifications, and to submit your application.</p>
+          </div>
+          <div class="detail-section anim anim-d3">
+            <div class="detail-section-title">About 123Dentist</div>
+            <p>123Dentist is one of Canada's largest and fastest-growing dental support organizations (DSO) with more than 450 clinics, 8,000 team members, and two million patients cared for every year. Founded by dentists, we are committed to elevating dental care and making Canadians smile. Our Regional HQs in Vancouver, Toronto, and Montreal provide the non-clinical backbone for dental teams across the country. This includes human resources (HR), marketing, finance, operations, and procurement support, so our clinics can focus on what matters most: their patients.</p>
+          </div>
+        </div>
+        <div class="detail-body-right anim anim-d2">
+          <div class="qr-card">
+            <div id="qr-canvas"></div>
+            <div>
+              <h3>Apply for this position</h3>
+              <p>Scan with your phone to view the full listing and submit your application.</p>
+              <div class="qr-url">${job.url}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(()=>{
+    new QRCode(document.getElementById("qr-canvas"),{
+      text:job.url, width:160, height:160,
+      colorDark:"#1B2B6B", colorLight:"#ffffff",
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  },50);
+}
+
+function goHome(){ renderLocation(); }
+function startOver(){ renderLocation(); }
+function showIdle(){ renderLocation(); idle.classList.remove('hidden'); }
+
+const idle=document.getElementById('idle-overlay');
+idle.addEventListener('click',()=>{ idle.classList.add('hidden'); resetIdleTimer(); });
+
+let idleTimer;
+function resetIdleTimer(){
+  clearTimeout(idleTimer);
+  idleTimer=setTimeout(()=>{ renderLocation(); idle.classList.remove('hidden'); },90000);
+}
+['touchstart','click','mousemove','keydown'].forEach(e=>{
+  document.addEventListener(e,resetIdleTimer,{passive:true});
+});
+
+// Header tap → go to idle screen
+document.querySelector('header').addEventListener('click', function(e){
+  e.stopPropagation();
+  renderLocation();
+  idle.classList.remove('hidden');
+});
+document.querySelector('header').addEventListener('touchstart', function(e){
+  e.stopPropagation();
+}, {passive:true});
+
+// Touch feedback for Chrome kiosk — adds .touched class on press, removes on release
+document.addEventListener('touchstart', function(e) {
+  const el = e.target.closest('.option-card, .job-row, .back-btn, #start-over-btn');
+  if (el) el.classList.add('touched');
+}, {passive: true});
+document.addEventListener('touchend', function(e) {
+  document.querySelectorAll('.touched').forEach(el => el.classList.remove('touched'));
+}, {passive: true});
+document.addEventListener('touchcancel', function(e) {
+  document.querySelectorAll('.touched').forEach(el => el.classList.remove('touched'));
+}, {passive: true});
+
+renderLocation();
+</script>
+</body>
+</html>
