@@ -483,7 +483,7 @@
 </head>
 <body>
 
-<div id="idle-overlay">
+<div id="idle-overlay" class="hidden">
   <div class="idle-logo"><img src="123Dentist_Logo.png" alt="123Dentist" /></div>
   <div class="idle-tagline"><span class="idle-kiosk-title">Careers Kiosk</span>We'll make you smile</div>
   <div class="idle-cta">Tap anywhere to explore opportunities</div>
@@ -982,11 +982,12 @@ idle.addEventListener('click',()=>{ idle.classList.add('hidden'); resetIdleTimer
 let idleTimer;
 function resetIdleTimer(){
   clearTimeout(idleTimer);
-  idleTimer=setTimeout(()=>{ renderLocation(); idle.classList.remove('hidden'); },90000);
+  idleTimer=setTimeout(()=>{ renderLocation(); },90000);
 }
 ['touchstart','click','mousemove','keydown'].forEach(e=>{
   document.addEventListener(e,resetIdleTimer,{passive:true});
 });
+resetIdleTimer();
 
 // Header tap → go to idle screen
 document.querySelector('header').addEventListener('click', function(e){
