@@ -2,6 +2,8 @@
 
 A single-file HTML kiosk app for displaying 123Dentist job openings at in-person events (e.g. career fairs, conferences). Visitors browse jobs by province → role category → individual listing, then scan a QR code to apply.
 
+The app is **bilingual (French/English)**. It loads in French by default. A toggle button in the bottom bar switches to English and back.
+
 ---
 
 ## Files
@@ -9,7 +11,9 @@ A single-file HTML kiosk app for displaying 123Dentist job openings at in-person
 | File | Purpose |
 |---|---|
 | `index.html` | The entire app — styles, HTML structure, job data, and JS logic |
-| `Jobs May 6th.csv` | Source of truth for job listings (exported from ADP) |
+| `Non QC JDIQ List.csv` | Source job listings for all provinces except Quebec (exported from ADP) |
+| `QC JDIQ List.csv` | Source job listings for Quebec (exported from ADP, French content) |
+| `index backup.html` | Pre-bilingual backup of the original English-only version |
 | `123dentist_logo.png` | Logo shown in header and idle screen |
 | `bg.webp` | Background image for the idle screen |
 | `smiley.svg` | (Unused or decorative asset) |
@@ -34,29 +38,38 @@ Idle Screen → Province → Role Category → Job List → Job Detail
 4. **Job List** (`renderJobs`) — all jobs matching the selected province + category.
 5. **Job Detail** (`renderJobDetail`) — full detail view with a QR code the visitor scans to apply.
 
-A breadcrumb bar at the top lets users jump back to any step. The "Start Over" button at the bottom always returns to the Province screen.
+A breadcrumb bar at the top lets users jump back to any step. The "Recommencer / Start Over" button at the bottom always returns to the Province screen. A language toggle button on the right side of the bottom bar switches between French and English — all UI labels, province names, category names, and status labels update instantly without a page reload. Job descriptions and titles are displayed as-is from the source data.
 
 ### Job data structure
 
-All jobs live in a single JavaScript array called `RAW_JOBS` near the top of the `<script>` block (currently around line 520). Each entry looks like:
+All jobs live in a single JavaScript array called `RAW_JOBS` near the top of the `<script>` block. Each entry looks like:
 
 ```js
 {
   posting:     10000,
   clinic:      "Victoria Square Dental",
   title:       "Associate Dentist",
-  category:    "Associate",
-  status:      "Commission",    // see STATUS_LABELS below
+  category:    "Associate Dentist",  // raw value from CSV — see category translation below
+  status:      "Commission",         // normalised code — see STATUS_LABELS below
   city:        "Regina",
   province:    "SK",
-  salary:      "",              // empty string if not listed
-  date:        "May 6, 2026",
-  description: "<formatted HTML>",
+  salary:      "",                   // empty string if not listed
+  description: "...",
   url:         "https://workforcenow.adp.com/..."
 }
 ```
 
 The app groups jobs automatically by province and category — no manual grouping needed.
+
+### Bilingual support
+
+All UI strings are defined in two translation objects (`FR` and `EN`) in the `<script>` block. The active language is stored in a `lang` variable (`'fr'` by default). Switching language calls `toggleLang()`, which updates the DOM and re-renders the current screen.
+
+**Category names** are translated via `categoryName(cat)`, which looks up the raw category key in `i18n().categoryNames`. Both Non-QC English categories and QC French categories are mapped in both translation objects so they display correctly in either language.
+
+**Province names** are translated via `provinceName(code)` (e.g. `BC` → `Colombie-Britannique` in French, `British Columbia` in English).
+
+**Status codes** are translated via `statusLabel(s)` using the `statusLabels` map in the active translation object.
 
 ### Job description formatting
 
@@ -71,228 +84,106 @@ Each section is wrapped in `<div class="desc-sec">` with a `<div class="desc-bod
 
 ### Status codes
 
-`status` maps to a human-readable label via `STATUS_LABELS`:
+`status` is normalised from the CSV `role_type` field to one of these codes, then translated via the active language's `statusLabels` map:
 
-| Code | Display |
-|---|---|
-| `FT` | Full-Time |
-| `PT` | Part-Time |
-| `Commission` | Commission |
-| `Locum` | Locum |
-| `Casual` | Casual |
-| `Temp FT` | Temp Full-Time |
-| `Temp PT` | Temp Part-Time |
+| Code | English display | French display |
+|---|---|---|
+| `FT` | Full-Time | Temps plein |
+| `PT` | Part-Time | Temps partiel |
+| `Commission` | Commission | Commission |
+| `Locum` | Locum | Locum |
+| `Casual` | Casual | Occasionnel |
+| `Temp FT` | Temp Full-Time | Temps plein temporaire |
+| `Temp PT` | Temp Part-Time | Temps partiel temporaire |
+| `PT 20+` | PT (20+ hrs/wk) | TP (20+ h/sem) |
 
 ---
 
 ## Updating the job listings
 
-### 1. Export the CSV from ADP
+Job data is loaded from two CSV files — one for Non-QC roles, one for QC — and embedded directly into `RAW_JOBS` in `index.html` using `update_jobs.py`.
 
-Export a CSV with exactly these column headers:
+### CSV formats
 
+**Non QC JDIQ List.csv** columns:
 ```
-Req #, Job Title, role_type, location, category, salary, description, url
+role_name, role_type, posting_number, location, category, salary, description, url
 ```
 
-- **Job Title** must follow the format `Role Title - Clinic Name` (e.g. `Associate Dentist - Victoria Square Dental`). The script splits on the first ` - ` to separate title from clinic.
+**QC JDIQ List.csv** columns:
+```
+role_name, role_type, posting_number, location, postal_code, category, description, url
+```
+
+For both files:
+- **role_name** must follow the format `Role Title - Clinic Name` (e.g. `Associate Dentist - Victoria Square Dental`). The script splits on the first ` - `.
 - **location** must be `City, Province` (e.g. `Regina, SK`).
-- **role_type** must be one of: `Full Time`, `Part Time`, `Commission`, `Casual`, `Locum`, `Temporary FT`, `Temporary PT`.
-- **description** is the full plain-text job description. The script formats it automatically.
+- **role_type** (Non-QC): `Full Time`, `Part Time`, `Commission`, `Casual`, `Locum`, `Temporary FT`, `Temporary PT`
+- **role_type** (QC): `Temps plein`, `Temps partiel`, `Temps Plein Temporaire`, `Commission Part Time 20+ hours`
 
-Save the file in the project folder (e.g. `Jobs May 6th.csv`).
+Replace the CSV files in the project folder with the new exports, keeping the same filenames.
 
-### 2. Save the update script
+### 2. Run the update script
 
-Save the following as `update_jobs.py` in the project folder. Update the `CSV_FILE` and `DATE` variables at the top before running.
+The script below reads both CSVs, normalises the data, and rewrites the `RAW_JOBS` block in `index.html`. Save it as `update_jobs.py` in the project folder and run it after replacing the CSV files.
 
 ```python
-import csv, re, html as html_mod
+import csv, json, re
 
-CSV_FILE = 'Jobs May 6th.csv'   # ← update filename
-DATE     = 'May 6, 2026'        # ← update date
-
-# ── Section headers the formatter recognises ─────────────────────────────────
-HEADERS = [
-    'WE HIRE AND TRAIN THE BEST OPERATIONAL EXCELLENCE EFFORTLESS GUEST OBSESSED WHAT WE ARE OFFERING:',
-    'NO WEEKENDS WHAT WE ARE LOOKING FOR:', 'GMB WHAT WE ARE OFFERING:',
-    'WHAT WE ARE OFFERING:', 'WHAT WE ARE LOOKING FOR:', 'WHO WE ARE:',
-    'KEY RESPONSIBILITIES:', 'QUALIFICATIONS:', 'COMPENSATION:',
-    'WE OFFER:', 'WORK HOURS:', 'ABOUT US:',
-    'SCHEDULE:', 'SC HEDULE:', 'SCHEDULE :', 'JOB ID:', 'JOB ID :',
-    'Responsibilities and Duties:',
-    'What We Are Looking For:', 'What We Are Offering:', 'What We Offer:',
-    'We offer:', 'We Offer:',
-    'Who We Are:', 'About Us:', 'Key Responsibilities:', 'Key Requirements:',
-    'Job Overview:', 'Job Responsibilities:', 'The Opportunity:',
-    'Our Ideal Candidate:', 'Looking For:', 'Minimum Qualifications:',
-    'Preferred Qualifications:', 'Treatment Planning:', 'Clinical Procedures:',
-    'Work Location:', 'Employment Type:', 'About the Role:',
-    'What We Are Looking For', 'What We Are Offering', 'Who We Are',
-    'Key Responsibilities', 'Responsibilities', 'Qualifications', 'Requirements',
-    'About Us', 'Benefits', 'Schedule', 'Compensation',
-    'Why You’ll Love This Opportunity', "Why You'll Love This Opportunity",
-    'Why You’ll Love It',             "Why You'll Love It",
-    'What You’ll Do',                 "What You'll Do",
-    'What You’ll Bring',              "What You'll Bring",
-    'What You Bring',
-    'Why Join 123Dentist', 'About 123Dentist', 'About the Role', 'What We Offer',
-]
-
-# Headers whose content should be rendered as a bullet list
-LIST_HEADERS = {
-    'WHAT WE ARE OFFERING:', 'WHAT WE ARE LOOKING FOR:',
-    'KEY RESPONSIBILITIES:', 'QUALIFICATIONS:', 'WE OFFER:',
-    'GMB WHAT WE ARE OFFERING:', 'NO WEEKENDS WHAT WE ARE LOOKING FOR:',
-    'WE HIRE AND TRAIN THE BEST OPERATIONAL EXCELLENCE EFFORTLESS GUEST OBSESSED WHAT WE ARE OFFERING:',
-    'What We Are Looking For:', 'What We Are Offering:', 'What We Offer:',
-    'We offer:', 'We Offer:',
-    'Key Responsibilities:', 'Key Requirements:', 'Job Responsibilities:',
-    'Our Ideal Candidate:', 'Looking For:',
-    'Minimum Qualifications:', 'Preferred Qualifications:',
-    'Treatment Planning:', 'Clinical Procedures:', 'Responsibilities and Duties:',
-    'What We Are Looking For', 'What We Are Offering', 'Key Responsibilities',
-    'Responsibilities', 'Qualifications', 'Requirements', 'Benefits',
-    'Why You’ll Love This Opportunity', "Why You'll Love This Opportunity",
-    'Why You’ll Love It',             "Why You'll Love It",
-    'What You’ll Do',                 "What You'll Do",
-    'What You’ll Bring',              "What You'll Bring",
-    'What You Bind', 'What You Bring',
-}
-
-HEADER_RE = re.compile(
-    '(' + '|'.join(re.escape(h) for h in sorted(HEADERS, key=len, reverse=True)) + ')'
-)
-
-CONTINUATION = {
-    'a','an','the','of','in','on','at','for','with','to','from','by',
-    'and','or','but','nor','as','per','through','about','over','under',
-    'into','during','including','such','like','than','that',
-    'which','who','whose','while','where','when',
-    'is','are','was','were','have','has','had','be','been','being',
-    'our','your','their','its','this','these','those',
-    'not','no','if','so','both','either','neither',
-    'each','every','some','any','all','upon',
-    'across','within','between','among','toward','towards',
-    'dental','oral','medical','clinical','surgical','general',
-    'annual','monthly','weekly','bi-weekly',
-}
-
-def format_list_items(text):
-    """Split flat text into bullet items by detecting phrase boundaries."""
-    if '•' in text:   # already has bullet chars — split on them
-        return None
-    words = text.split()
-    items, current, depth = [], [], 0
-    for word in words:
-        prev = current[-1].lower().rstrip('.,;:’\'"') if current else ''
-        should_split = (
-            current and word and word[0].isupper()
-            and depth == 0
-            and len(' '.join(current)) >= 12
-            and prev not in CONTINUATION
-            and not word.startswith('(')
-        )
-        if should_split:
-            items.append(' '.join(current))
-            current = []
-        current.append(word)
-        depth = max(0, depth + word.count('(') - word.count(')'))
-    if current:
-        items.append(' '.join(current))
-    return [i.strip() for i in items if i.strip()]
-
-def format_description(text):
-    """Convert a flat ADP description string into structured HTML."""
-    text = html_mod.escape(text, quote=False)
-    parts = HEADER_RE.split(text)
-    out = []
-
-    intro = parts[0].strip()
-    if intro:
-        out.append(intro)
-
-    for i in range(1, len(parts), 2):
-        header  = parts[i]
-        content = parts[i + 1].strip() if i + 1 < len(parts) else ''
-        if not header.endswith(':'):
-            content = re.sub(r'^:\s*', '', content)
-        content = content.strip()
-
-        display = header.rstrip(':').strip().upper()
-
-        if header in LIST_HEADERS:
-            items = format_list_items(content)
-            if items is None:   # already bulleted in source
-                parts_b = [p.strip() for p in content.split('•') if p.strip()]
-                body = '<br>'.join('&bull; ' + p for p in parts_b) if parts_b else content
-            else:
-                body = '<br>'.join('&bull; ' + item for item in items)
-        else:
-            body = content
-
-        # desc-sec div: CSS hides it when desc-body is empty
-        out.append(
-            '<div class="desc-sec"><strong>' + display +
-            '</strong><div class="desc-body">' + body + '</div></div>'
-        )
-
-    return ''.join(out)
-
-def js_str(s):
-    return s.replace('\\', '\\\\').replace('"', '\\"')
-
-ROLE_MAP = {
-    'Full Time': 'FT', 'Part Time': 'PT', 'Commission': 'Commission',
+STATUS_MAP = {
+    'Commission': 'Commission', 'Full Time': 'FT', 'Part Time': 'PT',
     'Casual': 'Casual', 'Locum': 'Locum',
     'Temporary FT': 'Temp FT', 'Temporary PT': 'Temp PT',
+    'Temps plein': 'FT', 'Temps partiel': 'PT',
+    'Temps Plein Temporaire': 'Temp FT',
+    'Commission Part Time 20+ hours': 'PT 20+',
 }
 
-jobs = []
-with open(CSV_FILE, encoding='utf-8') as f:
-    for row in csv.DictReader(f):
-        raw = row['Job Title'].strip()
-        title, clinic = (raw.split(' - ', 1) if ' - ' in raw else (raw, ''))
-        title, clinic = title.strip(), clinic.strip()
-        loc = row['location'].strip()
-        city, province = (loc.rsplit(', ', 1) if ', ' in loc else (loc, ''))
-        status = ROLE_MAP.get(row['role_type'].strip(), row['role_type'].strip())
-        desc   = js_str(format_description(row['description'].strip()))
-        jobs.append(
-            '  {posting:' + row['Req #'].strip() +
-            ',clinic:"'   + js_str(clinic)                    + '"' +
-            ',title:"'    + js_str(title)                     + '"' +
-            ',category:"' + js_str(row['category'].strip())   + '"' +
-            ',status:"'   + status                            + '"' +
-            ',city:"'     + js_str(city)                      + '"' +
-            ',province:"' + province                          + '"' +
-            ',salary:"'   + js_str(row['salary'].strip())     + '"' +
-            ',date:"'     + DATE                              + '"' +
-            ',description:"' + desc                          + '"' +
-            ',url:"'      + row['url'].strip()                + '"}'
-        )
+def parse_location(loc):
+    parts = loc.rsplit(',', 1)
+    return (parts[0].strip(), parts[1].strip()) if len(parts) == 2 else (loc.strip(), '')
 
-new_block = 'const RAW_JOBS = [\n' + ',\n'.join(jobs) + '\n];'
+def parse_role_name(name):
+    parts = name.split(' - ', 1)
+    return (parts[0].strip(), parts[1].strip()) if len(parts) == 2 else (name.strip(), '')
+
+jobs = []
+
+for fname, has_salary in [('Non QC JDIQ List.csv', True), ('QC JDIQ List.csv', False)]:
+    with open(fname, encoding='utf-8-sig') as f:
+        for row in csv.DictReader(f):
+            title, clinic = parse_role_name(row['role_name'])
+            city, province = parse_location(row['location'])
+            status = STATUS_MAP.get(row['role_type'].strip(), row['role_type'].strip())
+            jobs.append({
+                'posting': row['posting_number'].strip(),
+                'clinic': clinic, 'title': title,
+                'category': row['category'].strip(),
+                'status': status, 'city': city, 'province': province,
+                'salary': row['salary'].strip() if has_salary else '',
+                'description': row['description'].strip(),
+                'url': row['url'].strip(),
+            })
+
+lines = ['const RAW_JOBS = [']
+for j in jobs:
+    lines.append('  ' + json.dumps(j, ensure_ascii=False) + ',')
+lines[-1] = lines[-1].rstrip(',')
+lines.append('];')
+new_block = '\n'.join(lines)
 
 with open('index.html', 'r', encoding='utf-8') as f:
-    lines = f.readlines()
+    html = f.read()
 
-start = next(i for i, l in enumerate(lines) if l.strip() == 'const RAW_JOBS = [')
-end   = next(i for i in range(start, len(lines)) if lines[i].strip() == '];')
-
+start = html.index('const RAW_JOBS = [')
+end = html.index('\n];', start) + 3
 with open('index.html', 'w', encoding='utf-8') as f:
-    f.write(''.join(lines[:start]) + new_block + '\n' + ''.join(lines[end + 1:]))
+    f.write(html[:start] + new_block + html[end:])
 
-print('Done. ' + str(len(jobs)) + ' jobs written.')
+print(f'Done. {len(jobs)} jobs written.')
 ```
 
-### 3. Run it
-
-```bash
-python3 update_jobs.py
-```
-
-### 4. Test it
+### 3. Test it
 
 Open `index.html` directly in a browser. No server needed. Verify:
 - The province list shows the expected provinces.
