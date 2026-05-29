@@ -279,8 +279,12 @@
   .detail-section-title { font-size: 15px; text-transform: uppercase; color: #374151; font-weight: 700; margin-bottom: 10px; }
   .detail-section p { font-size: 15px; line-height: 1.75; color: #374151; font-weight: 400; }
   .desc { font-size: 15px; line-height: 1.75; color: #374151; }
-  .desc-sec { margin-top: 18px; }
-  .desc-sec strong { display: block; font-size: 15px; color: #374151; font-weight: 700; margin-bottom: 6px; }
+  .desc-intro { font-size: 15px; line-height: 1.75; color: #374151; margin-bottom: 20px; }
+  .desc-sec { margin-top: 22px; }
+  .desc-sec strong { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .desc-sec .desc-body { font-size: 15px; line-height: 1.75; color: #374151; }
+  .desc-sec .desc-body .desc-item { display: flex; gap: 8px; margin-bottom: 4px; }
+  .desc-sec .desc-body .desc-item::before { content: '•'; color: var(--blue); font-weight: 700; flex-shrink: 0; }
   .desc-sec:has(.desc-body:empty) { display: none; }
 
   /* QR */
@@ -1099,6 +1103,163 @@ function renderJobs() {
     </div>`;
 }
 
+
+// ── Description formatter ─────────────────────────────────────────────────────
+function formatDesc(raw) {
+  if (!raw) return '';
+
+  // HTML-escape
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  raw = esc(raw);
+
+  // Known section headers, ordered longest-first so regex prefers full matches
+  const HEADERS = [
+    // Malformed / typo variants first
+    'WH AT WE ARE OFFERING:','SC HEDULE:','SCHEDULE :','JOD ID :','JOD ID:',
+    'JOB ID :','GMB WHAT WE ARE OFFERING:',
+    'NO WEEKENDS WHAT WE ARE LOOKING FOR:',
+    'WE HIRE AND TRAIN THE BEST OPERATIONAL EXCELLENCE EFFORTLESS GUEST OBSESSED WHAT WE ARE OFFERING:',
+    'S CE QUE NOUS PROPOSONS :','ONTARIO WHO WE ARE:',
+    'PM WHAT WE ARE LOOKING FOR:',
+    // French ALL-CAPS
+    'CE QUE NOUS PROPOSONS :','CE QUE NOUS RECHERCHONS :',
+    'CE QUE NOUS PROPOSONS:','CE QUE NOUS RECHERCHONS:',
+    'VOS RESPONSABILITÉS :','VOS RESPONSABILITÉS:',
+    'PROFIL RECHERCHÉ :','PROFIL RECHERCHÉ:',
+    'HORAIRES :','HORAIRES:','RÉMUNÉRATION :','RÉMUNÉRATION:',
+    'WHY OUR TEAM LOVES COMING TO WORK:',
+    // English ALL-CAPS
+    'WHAT WE ARE OFFERING:','WHAT WE ARE LOOKING FOR:','WHAT WE OFFER:',
+    'WHO WE ARE:','KEY RESPONSIBILITIES:','QUALIFICATIONS:',
+    'COMPENSATION:','SCHEDULE:','WE OFFER:','ABOUT US:','JOB ID:',
+    // Mixed-case with colon
+    'Responsibilities and Duties:','What We Are Offering:','What We Are Looking For:',
+    'What We Offer:','We offer:','We Offer:','Who We Are:',
+    'Key Responsibilities:','About the Role:','About Us:','Job Overview:',
+    'Minimum Qualifications:','Preferred Qualifications:',
+    'What You\'ll Do:','What You\'ll Bring:','What You Bring:',
+    'Why Join 123Dentist:','Why You\'ll Love This Opportunity:',
+    'What Sets You Apart:','The Opportunity:','Our Ideal Candidate:',
+    // Mixed-case without colon (standalone on word boundary)
+    'What We Are Offering','What We Are Looking For','What We Offer',
+    'Who We Are','Key Responsibilities','About the Role','About Us',
+    'What You\'ll Do','What You\'ll Bring','What You Bring',
+    'Why Join 123Dentist','Why You\'ll Love This Opportunity',
+    'Why You\'ll Love It','Why Choose','What Sets You Apart',
+    'About 123Dentist','Job Overview','The Opportunity',
+    // French mixed-case
+    'À propos de nous :','À propos du rôle :','Description du poste:',
+    'Type de poste:','Nous offrons :','Nous offrons:',
+    'Ce que nous offrons :','Ce que nous offrons:',
+    'Ce que nous proposons :','Ce que nous proposons:',
+    'Ce que nous recherchons :','Ce que nous recherchons:',
+    'Ce que vous ferez :','Ce que vous ferez:',
+    'Ce que vous apportez :','Ce que vous apportez:',
+    'Pourquoi joindre 123Dentiste:','Pourquoi joindre 123Dentiste :',
+    'Qui nous sommes:','Qui nous sommes :',
+  ];
+
+  const LIST_HEADERS = new Set([
+    'WHAT WE ARE OFFERING:','WHAT WE ARE LOOKING FOR:','WHAT WE OFFER:',
+    'KEY RESPONSIBILITIES:','QUALIFICATIONS:','WE OFFER:',
+    'GMB WHAT WE ARE OFFERING:','NO WEEKENDS WHAT WE ARE LOOKING FOR:',
+    'WH AT WE ARE OFFERING:','WE HIRE AND TRAIN THE BEST OPERATIONAL EXCELLENCE EFFORTLESS GUEST OBSESSED WHAT WE ARE OFFERING:',
+    'PM WHAT WE ARE LOOKING FOR:','S CE QUE NOUS PROPOSONS :',
+    'VOS RESPONSABILITÉS :','VOS RESPONSABILITÉS:','PROFIL RECHERCHÉ :','PROFIL RECHERCHÉ:',
+    'CE QUE NOUS PROPOSONS :','CE QUE NOUS RECHERCHONS :',
+    'CE QUE NOUS PROPOSONS:','CE QUE NOUS RECHERCHONS:',
+    'WHY OUR TEAM LOVES COMING TO WORK:',
+    'What We Are Offering:','What We Are Looking For:','What We Offer:',
+    'We offer:','We Offer:','Responsibilities and Duties:',
+    'Key Responsibilities:','Minimum Qualifications:','Preferred Qualifications:',
+    'What You\'ll Do:','What You\'ll Bring:','What You Bring:',
+    'Why You\'ll Love This Opportunity:','Our Ideal Candidate:',
+    'What We Are Offering','What We Are Looking For','What We Offer',
+    'Key Responsibilities','What You\'ll Do','What You\'ll Bring','What You Bring',
+    'Why You\'ll Love This Opportunity','Why You\'ll Love It','Why Choose',
+    'Ce que nous offrons :','Ce que nous offrons:',
+    'Ce que nous proposons :','Ce que nous proposons:',
+    'Ce que nous recherchons :','Ce que nous recherchons:',
+    'Ce que vous ferez :','Ce que vous ferez:',
+    'Ce que vous apportez :','Ce que vous apportez:',
+    'Nous offrons :','Nous offrons:',
+  ]);
+
+  const SKIP_HEADERS = new Set(['JOB ID:','JOB ID :','JOD ID:','JOD ID :']);
+
+  // Build regex — escape special chars, longest first
+  const escaped = HEADERS.map(h => h.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  const re = new RegExp('(' + escaped.join('|') + ')', 'g');
+
+  const parts = raw.split(re);
+  let out = '';
+
+  const intro = parts[0].trim();
+  if (intro) out += `<p class="desc-intro">${intro}</p>`;
+
+  for (let i = 1; i < parts.length; i += 2) {
+    const header  = parts[i];
+    const content = ((parts[i + 1] || '').trim());
+
+    // Skip JOB ID and empty sections
+    if (SKIP_HEADERS.has(header)) continue;
+    if (!content && !LIST_HEADERS.has(header)) continue;
+
+    // Display label: strip trailing colon/space, uppercase
+    const label = header.replace(/\s*:?\s*$/, '').trim();
+
+    if (LIST_HEADERS.has(header)) {
+      out += `<div class="desc-sec"><strong>${label}</strong><div class="desc-body">${makeItems(content)}</div></div>`;
+    } else {
+      out += `<div class="desc-sec"><strong>${label}</strong><div class="desc-body">${content}</div></div>`;
+    }
+  }
+
+  return out;
+}
+
+const CONTINUATION = new Set([
+  'a','an','the','of','in','on','at','for','with','to','from','by','and','or',
+  'but','nor','as','per','through','about','over','under','into','during',
+  'including','such','like','than','that','which','who','whose','while',
+  'where','when','is','are','was','were','have','has','had','be','been',
+  'being','our','your','their','its','this','these','those','not','no','if',
+  'so','both','either','neither','each','every','some','any','all','upon',
+  'across','within','between','among','toward','towards','dental','oral',
+  'medical','clinical','surgical','general','annual','monthly','weekly',
+  // French
+  'un','une','des','les','de','du','en','et','ou','pour','avec','dans','sur',
+  'par','qui','que','dont','où','si','mais','donc','or','ni','car','ce','cet',
+  'cette','ces','mon','ton','son','notre','votre','leur','au','aux','est',
+  'sont','nous','vous','ils','elles','je','tu','il','elle','on','y','en',
+  'très','plus','bien','aussi','même','tout','tous','toutes','toute',
+]);
+
+function makeItems(text) {
+  if (!text) return '';
+  // Already has bullet chars
+  if (text.includes('•') || text.includes('·') || text.includes('✓') || text.includes('–')) {
+    return text.split(/[•·✓]|(?:^|\s)–\s/).map(s => s.trim()).filter(Boolean)
+      .map(s => `<div class="desc-item">${s}</div>`).join('');
+  }
+  // Split on capitalised boundaries
+  const words = text.split(/\s+/);
+  const items = [];
+  let cur = [];
+  for (const word of words) {
+    const prev = cur.length ? cur[cur.length-1].toLowerCase().replace(/[.,;:()\-'"'"]+$/,'') : '';
+    const startsItem = word && /^[A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŸÆŒ]/.test(word)
+      && cur.length > 0
+      && cur.join(' ').length >= 8
+      && !CONTINUATION.has(prev)
+      && !word.startsWith('(');
+    if (startsItem) { items.push(cur.join(' ')); cur = []; }
+    cur.push(word);
+  }
+  if (cur.length) items.push(cur.join(' '));
+  return items.filter(Boolean).map(s => `<div class="desc-item">${s}</div>`).join('');
+}
+// ─────────────────────────────────────────────────────────────────────────────
 function renderJobDetail(idx) {
   const job=RAW_JOBS[idx];
   gtag('event', 'job_viewed', { event_category: 'Kiosk', event_label: `${job.title} – ${job.clinic}`, job_title: job.title, clinic: job.clinic, province: job.province, posting: job.posting });
@@ -1129,7 +1290,7 @@ function renderJobDetail(idx) {
           </div>
           ${job.description ? `<div class="detail-section anim anim-d2">
             <div class="detail-section-title">${i18n().aboutRole}</div>
-            <div class="desc">${job.description}</div>
+            <div class="desc">${formatDesc(job.description)}</div>
           </div>` : ''}
         </div>
         <div class="detail-body-right anim anim-d2">

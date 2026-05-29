@@ -73,14 +73,28 @@ All UI strings are defined in two translation objects (`FR` and `EN`) in the `<s
 
 ### Job description formatting
 
-The `description` field contains formatted HTML generated from the raw ADP description text. The formatter:
+**No preprocessing needed.** Descriptions are stored as raw plain text from the CSV, exactly as exported from ADP. All formatting happens client-side at render time via the `formatDesc()` function in `index.html`.
 
-- Detects section headers (e.g. `WHAT WE ARE OFFERING`, `WHO WE ARE`, `About the Role`, `What We Offer`, `Schedule`, `Qualifications`, etc.) and renders them as bold uppercase headings.
-- Bullet-formats list sections (offerings, requirements, responsibilities, qualifications, benefits).
-- Passes paragraph sections (who we are, about us, schedule, compensation) through as plain text.
-- Skips any header whose content is empty so no orphaned headings appear.
+When a job detail page opens, `formatDesc()`:
 
-Each section is wrapped in `<div class="desc-sec">` with a `<div class="desc-body">` for the content. CSS hides the entire section if the body is empty (`.desc-sec:has(.desc-body:empty)`), catching any edge cases the formatter misses.
+1. **Detects section headers** — scans for ~50 known patterns (English ALL-CAPS, English mixed-case, and French equivalents) and splits the text on them. Examples:
+
+   | Type | Examples |
+   |---|---|
+   | English ALL-CAPS | `WHAT WE ARE OFFERING:` `SCHEDULE:` `WHAT WE ARE LOOKING FOR:` `WHO WE ARE:` `COMPENSATION:` |
+   | English mixed-case | `What We Offer` `About the Role` `Who We Are` `What You'll Do` `Key Responsibilities` |
+   | French ALL-CAPS | `CE QUE NOUS PROPOSONS :` `CE QUE NOUS RECHERCHONS :` `HORAIRES:` `VOS RESPONSABILITÉS :` |
+   | French mixed-case | `Qui nous sommes` `À propos de nous :` `Description du poste:` `Nous offrons :` |
+
+2. **Styles headers** as small-caps navy labels with an underline, visually separating sections.
+
+3. **Bullet-formats list sections** — for headers like `WHAT WE ARE OFFERING:`, `WHAT WE ARE LOOKING FOR:`, `CE QUE NOUS PROPOSONS :`, `Key Responsibilities`, etc., the content is split into individual bullet items. Splitting uses capitalisation boundaries (a new item starts when a capitalised word follows content that doesn't end with a continuation word like "and", "or", "the", etc.).
+
+4. **Passes narrative sections** (schedule, compensation, who we are, about the role) through as plain paragraphs.
+
+5. **Drops `JOB ID:` lines** silently.
+
+**Adding new header patterns** — if future ADP exports introduce new section headers that aren't being detected, add them to the `HEADERS` array in `formatDesc()` in `index.html`. If the new header's content should be bulleted, also add it to the `LIST_HEADERS` set. Both are near the top of the function.
 
 ### Status codes
 
@@ -121,7 +135,7 @@ For both files:
 - **role_type** (Non-QC): `Full Time`, `Part Time`, `Commission`, `Casual`, `Locum`, `Temporary FT`, `Temporary PT`
 - **role_type** (QC): `Temps plein`, `Temps partiel`, `Temps Plein Temporaire`, `Commission Part Time 20+ hours`
 
-Replace the CSV files in the project folder with the new exports, keeping the same filenames.
+Replace the CSV files in the project folder with the new exports, keeping the same filenames. Description text should be left as raw plain text — do not pre-format or add HTML. The `formatDesc()` function in `index.html` handles all formatting at render time.
 
 ### 2. Run the update script
 
