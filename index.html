@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>123Dentist — Careers Kiosk</title>
+<title>123Dentist – Kiosque Carrières</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Google tag (gtag.js) -->
@@ -907,7 +907,7 @@ const FR = {
   allProvinces:'Toutes les provinces',
   whereTitle:'Où souhaitez-vous travailler ?',
   whereSubtitle:'Sélectionnez une province pour explorer les postes disponibles.',
-  roleTitle:'Quel type de poste ?', roleSubtitle:'Postes en',
+  roleTitle:'Quel type de poste ?', roleSubtitle:'Postes au',
   opening:n=>n===1?'1 poste':`${n} postes`, inProvince:'en',
   locationLabel:'Emplacement', employmentLabel:"Type d'emploi",
   salaryLabel:'Salaire', categoryLabel:'Catégorie', postingLabel:'Affichage #',
@@ -1290,7 +1290,7 @@ function renderJobDetail(idx) {
           </div>
           ${job.description ? `<div class="detail-section anim anim-d2">
             <div class="detail-section-title">${i18n().aboutRole}</div>
-            <div class="desc">${formatDesc(job.description)}</div>
+            <div class="desc">${formatDesc(job.province==='QC' ? job.description.replace(/123Dentist(?!e)/g,'123Dentiste') : job.description)}</div>
           </div>` : ''}
         </div>
         <div class="detail-body-right anim anim-d2">
