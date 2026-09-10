@@ -160,6 +160,8 @@ for csv_file in CSV_FILES:
             title, clinic = title.strip(), clinic.strip()
             loc = row['location'].strip()
             city, province = (loc.rsplit(', ', 1) if ', ' in loc else (loc, ''))
+            if not province and 'QC' in csv_file:   # QC board rows w/ blank location → Quebec
+                province = 'QC'
             rt = row['role_type'].strip()
             status = ROLE_MAP.get(rt, rt)
             desc   = js_str(format_description(row['description'].strip()))
