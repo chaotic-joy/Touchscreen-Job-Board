@@ -1,7 +1,7 @@
 import csv, re, html as html_mod
 
 # Two source CSVs (English board + French/Quebec board) exported by the scraper.
-CSV_FILES = ['jobs.csv', 'jobs_quebec.csv']
+CSV_FILES = ['EDDS - NWDE 2026.csv', 'EDDS - NWDE 2026 - QC.csv']
 DATE      = 'September 10, 2026'
 
 # ── Section headers the formatter recognises ─────────────────────────────────
