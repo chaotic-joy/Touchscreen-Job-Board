@@ -107,13 +107,29 @@
     padding: 44px 56px calc(var(--btn-h) + 24px);
     scroll-behavior: smooth;
   }
-  /* Short screens sit in the middle of the area under the header.
-     Taller than the area, the block keeps its height, starts at the top, and scrolls. */
-  .screen-fit {
-    flex: 1 0 auto;
+  /* Title and back button stay at the top. Only the options fill the
+     space under them: centered when they fit, top-aligned and scrolling
+     inside that space when they don't. */
+  .screen {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: safe center;
+  }
+  .screen-head { flex: 0 0 auto; }
+  .options-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 4px 2px 8px;
+  }
+  .options-stage > .card-grid,
+  .options-stage > .job-list {
+    margin-block: auto;
+    flex: 0 0 auto;
     width: 100%;
   }
 
@@ -197,8 +213,9 @@
   .card-arrow svg { width: 16px; height: 16px; stroke: var(--blue); transition: stroke .2s; }
   .option-card:hover .card-arrow svg, .option-card:active .card-arrow svg, .option-card.touched .card-arrow svg { stroke: #fff; }
 
-  /* Job list */
-  .job-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  /* Job list. Rows share a row when three fit, and a short row stays centered. */
+  .job-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .job-list .job-row { width: calc((100% - 24px) / 3); }
   .job-row {
     background: var(--white);
     border: 2px solid var(--border);
@@ -456,9 +473,11 @@
       width: 100%;
     }
 
-    .job-list {
-      grid-template-columns: 1fr;
-    }
+    .screen { display: block; flex: none; min-height: 0; }
+    .options-stage { display: block; overflow: visible; min-height: 0; padding: 0; }
+    .options-stage > .card-grid,
+    .options-stage > .job-list { margin-block: 0; }
+    .job-list .job-row { width: 100%; }
     .job-row { padding: 16px 18px; }
     .job-title { font-size: 16px; }
 
@@ -593,8 +612,9 @@ function renderLocation() {
   const c=document.getElementById('content');
   c.scrollTop=0;
   c.innerHTML=`
-    <div class="screen-fit">
-    <div class="anim"><div class="screen-title">Where would you like to work?</div><div class="screen-subtitle">Select a province to explore available positions.</div></div>
+    <div class="screen">
+    <div class="screen-head anim"><div class="screen-title">Where would you like to work?</div><div class="screen-subtitle">Select a province to explore available positions.</div></div>
+    <div class="options-stage">
     <div class="card-grid centered">
       ${locations.map((loc,i)=>`
         <div class="option-card anim anim-d${Math.min(i+1,5)}" onclick="selectLocation('${loc.province}')">
@@ -603,6 +623,7 @@ function renderLocation() {
           <div class="card-meta">${loc.jobs.length} opening${loc.jobs.length!==1?'s':''}</div>
           <div class="card-arrow">${iconChevron}</div>
         </div>`).join('')}
+    </div>
     </div>
     </div>`;
 }
@@ -622,9 +643,12 @@ function renderCategory() {
   const ct=document.getElementById('content');
   ct.scrollTop=0;
   ct.innerHTML=`
-    <div class="screen-fit">
+    <div class="screen">
+    <div class="screen-head">
     <button class="back-btn anim" onclick="renderLocation()">${iconArrowLeft} All Provinces</button>
     <div class="anim anim-d1"><div class="screen-title">What type of role?</div><div class="screen-subtitle">Positions in <strong>${PROVINCE_NAMES[state.location.province]||state.location.province}</strong></div></div>
+    </div>
+    <div class="options-stage">
     <div class="card-grid centered">
       ${Object.entries(cats).map(([cat,count],i)=>`
         <div class="option-card anim anim-d${Math.min(i+2,5)}" onclick="selectCategory('${cat.replace(/'/g,"\\'")}')">
@@ -633,6 +657,7 @@ function renderCategory() {
           <div class="card-meta">${count} opening${count!==1?'s':''}</div>
           <div class="card-arrow">${iconChevron}</div>
         </div>`).join('')}
+    </div>
     </div>
     </div>`;
 }
@@ -650,9 +675,12 @@ function renderJobs() {
   const ct=document.getElementById('content');
   ct.scrollTop=0;
   ct.innerHTML=`
-    <div class="screen-fit">
+    <div class="screen">
+    <div class="screen-head">
     <button class="back-btn anim" onclick="renderCategory()">${iconArrowLeft} Back</button>
     <div class="anim anim-d1"><div class="screen-title">${state.category}</div><div class="screen-subtitle">${jobs.length} opening${jobs.length!==1?'s':''} in ${PROVINCE_NAMES[state.location.province]||state.location.province}</div></div>
+    </div>
+    <div class="options-stage">
     <div class="job-list">
       ${jobs.map((job,i)=>`
         <div class="job-row anim anim-d${Math.min(i+2,5)}" onclick="renderJobDetail(${RAW_JOBS.indexOf(job)})">
@@ -666,6 +694,7 @@ function renderJobs() {
           </div>
           <div class="job-row-arrow">${iconChevron}</div>
         </div>`).join('')}
+    </div>
     </div>
     </div>`;
 }
