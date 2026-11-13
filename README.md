@@ -10,7 +10,7 @@ A single-file HTML kiosk app for displaying 123Dentist job openings at in-person
 |---|---|
 | `index.html` | The entire app — styles, HTML structure, job data, and JS logic |
 | `update_jobs.py` | Refreshes `RAW_JOBS` from the ADP career center |
-| `123dentist_logo.png` | Logo shown in header and idle screen |
+| `123Dentist_Logo.png` | Logo shown in header and idle screen |
 | `bg.webp` | Background image for the idle screen |
 | `smiley.svg` | (Unused or decorative asset) |
 
