@@ -100,9 +100,21 @@
   /* Content */
   #content {
     flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     padding: 44px 56px calc(var(--btn-h) + 24px);
     scroll-behavior: smooth;
+  }
+  /* Short screens sit in the middle of the area under the header.
+     Taller than the area, the block keeps its height, starts at the top, and scrolls. */
+  .screen-fit {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    width: 100%;
   }
 
   .screen-title {
@@ -581,6 +593,7 @@ function renderLocation() {
   const c=document.getElementById('content');
   c.scrollTop=0;
   c.innerHTML=`
+    <div class="screen-fit">
     <div class="anim"><div class="screen-title">Where would you like to work?</div><div class="screen-subtitle">Select a province to explore available positions.</div></div>
     <div class="card-grid centered">
       ${locations.map((loc,i)=>`
@@ -590,6 +603,7 @@ function renderLocation() {
           <div class="card-meta">${loc.jobs.length} opening${loc.jobs.length!==1?'s':''}</div>
           <div class="card-arrow">${iconChevron}</div>
         </div>`).join('')}
+    </div>
     </div>`;
 }
 
@@ -608,6 +622,7 @@ function renderCategory() {
   const ct=document.getElementById('content');
   ct.scrollTop=0;
   ct.innerHTML=`
+    <div class="screen-fit">
     <button class="back-btn anim" onclick="renderLocation()">${iconArrowLeft} All Provinces</button>
     <div class="anim anim-d1"><div class="screen-title">What type of role?</div><div class="screen-subtitle">Positions in <strong>${PROVINCE_NAMES[state.location.province]||state.location.province}</strong></div></div>
     <div class="card-grid centered">
@@ -618,6 +633,7 @@ function renderCategory() {
           <div class="card-meta">${count} opening${count!==1?'s':''}</div>
           <div class="card-arrow">${iconChevron}</div>
         </div>`).join('')}
+    </div>
     </div>`;
 }
 
@@ -634,6 +650,7 @@ function renderJobs() {
   const ct=document.getElementById('content');
   ct.scrollTop=0;
   ct.innerHTML=`
+    <div class="screen-fit">
     <button class="back-btn anim" onclick="renderCategory()">${iconArrowLeft} Back</button>
     <div class="anim anim-d1"><div class="screen-title">${state.category}</div><div class="screen-subtitle">${jobs.length} opening${jobs.length!==1?'s':''} in ${PROVINCE_NAMES[state.location.province]||state.location.province}</div></div>
     <div class="job-list">
@@ -649,6 +666,7 @@ function renderJobs() {
           </div>
           <div class="job-row-arrow">${iconChevron}</div>
         </div>`).join('')}
+    </div>
     </div>`;
 }
 
