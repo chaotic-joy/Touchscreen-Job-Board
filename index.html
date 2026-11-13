@@ -582,7 +582,7 @@ function renderLocation() {
   c.scrollTop=0;
   c.innerHTML=`
     <div class="anim"><div class="screen-title">Where would you like to work?</div><div class="screen-subtitle">Select a province to explore available positions.</div></div>
-    <div class="card-grid">
+    <div class="card-grid centered">
       ${locations.map((loc,i)=>`
         <div class="option-card anim anim-d${Math.min(i+1,5)}" onclick="selectLocation('${loc.province}')">
           <div class="card-icon">${iconPin}</div>
