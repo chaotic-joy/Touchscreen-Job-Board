@@ -509,6 +509,11 @@
     #idle-overlay .idle-cta { font-size: 13px; padding: 14px 32px; width: auto; text-align: center; max-width: 280px; line-height: 1.5; position: fixed !important; bottom: 40px; left: 0; right: 0; margin: 0 auto; z-index: 103; }
   }
 
+  /* Tablets used the base 36px before the subtitle margin was cleared. */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .screen-subtitle { margin-bottom: 36px; }
+  }
+
   /* ── Desktop (1024px+) ── */
   @media (min-width: 1024px) {
     .idle-logo img { height: 130px; }
